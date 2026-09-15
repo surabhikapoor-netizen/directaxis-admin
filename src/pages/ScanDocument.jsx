@@ -228,9 +228,9 @@ export default function ScanDocument() {
                 <div
                   className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
                     i < currentStep
-                      ? 'bg-toyota-green text-white'
+                      ? 'bg-da-green text-white'
                       : i === currentStep
-                      ? 'bg-toyota-green text-white'
+                      ? 'bg-da-green text-white'
                       : 'bg-gray-200 text-gray-500'
                   }`}
                 >
@@ -239,7 +239,7 @@ export default function ScanDocument() {
                 {i < 5 && (
                   <div
                     className={`hidden sm:block w-12 lg:w-20 h-0.5 mx-1 ${
-                      i < currentStep ? 'bg-toyota-green' : 'bg-gray-200'
+                      i < currentStep ? 'bg-da-green' : 'bg-gray-200'
                     }`}
                   />
                 )}
@@ -251,7 +251,7 @@ export default function ScanDocument() {
               <p
                 key={step}
                 className={`text-xs text-center max-w-[80px] lg:max-w-none ${
-                  i === currentStep ? 'text-toyota-green font-medium' : 'text-gray-400'
+                  i === currentStep ? 'text-da-green font-medium' : 'text-gray-400'
                 }`}
               >
                 <span className="hidden sm:inline">{step}</span>
@@ -264,7 +264,7 @@ export default function ScanDocument() {
       <div className="card">
         {currentStep === 0 && (
           <div>
-            <h3 className="text-xl font-semibold text-toyota-black mb-1">Upload Document</h3>
+            <h3 className="text-xl font-semibold text-da-black mb-1">Upload Document</h3>
             <p className="text-gray-500 text-sm mb-6">
               Drag & drop or choose a file to begin scanning
             </p>
@@ -272,9 +272,9 @@ export default function ScanDocument() {
             <div
               className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${
                 dragOver
-                  ? 'border-toyota-green bg-toyota-green-light'
+                  ? 'border-da-green bg-da-green-light'
                   : file
-                  ? 'border-toyota-green bg-toyota-green-light/50'
+                  ? 'border-da-green bg-da-green-light/50'
                   : 'border-gray-300 hover:border-gray-400'
               }`}
               onDragOver={(e) => {
@@ -286,8 +286,8 @@ export default function ScanDocument() {
             >
               {file ? (
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 bg-toyota-green/10 rounded-xl flex items-center justify-center mb-4">
-                    <FileText size={32} className="text-toyota-green" />
+                  <div className="w-16 h-16 bg-da-green/10 rounded-xl flex items-center justify-center mb-4">
+                    <FileText size={32} className="text-da-green" />
                   </div>
                   <p className="text-lg font-medium text-gray-800">{file.name}</p>
                   <p className="text-sm text-gray-500 mt-1">
@@ -344,7 +344,7 @@ export default function ScanDocument() {
 
         {currentStep === 1 && (
           <div>
-            <h3 className="text-xl font-semibold text-toyota-black mb-1">Document Type</h3>
+            <h3 className="text-xl font-semibold text-da-black mb-1">Document Type</h3>
             <p className="text-gray-500 text-sm mb-6">
               Select the type of document you are uploading
             </p>
@@ -368,7 +368,7 @@ export default function ScanDocument() {
                   key={type.id}
                   className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${
                     selectedType === type.id
-                      ? 'border-toyota-green bg-toyota-green-light ring-1 ring-toyota-green'
+                      ? 'border-da-green bg-da-green-light ring-1 ring-da-green'
                       : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                   }`}
                   onClick={() => setSelectedType(type.id)}
@@ -376,7 +376,7 @@ export default function ScanDocument() {
                   <span className="text-2xl">{type.icon}</span>
                   <span className="text-sm font-medium text-gray-700">{type.name}</span>
                   {selectedType === type.id && (
-                    <div className="ml-auto w-5 h-5 bg-toyota-green rounded-full flex items-center justify-center">
+                    <div className="ml-auto w-5 h-5 bg-da-green rounded-full flex items-center justify-center">
                       <Check size={12} className="text-white" />
                     </div>
                   )}
@@ -389,9 +389,9 @@ export default function ScanDocument() {
         {currentStep === 2 && (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xl font-semibold text-toyota-black">Extraction Prompts</h3>
+              <h3 className="text-xl font-semibold text-da-black">Extraction Prompts</h3>
               {selectedType && (
-                <span className="text-sm text-toyota-green font-medium flex items-center gap-1">
+                <span className="text-sm text-da-green font-medium flex items-center gap-1">
                   <Check size={14} />
                   {documentTypes.find((t) => t.id === selectedType)?.name}
                   <button
@@ -427,7 +427,7 @@ export default function ScanDocument() {
                         [prompt.id]: !prev[prompt.id],
                       }))
                     }
-                    className="w-4 h-4 text-toyota-green rounded border-gray-300 focus:ring-toyota-green"
+                    className="w-4 h-4 text-da-green rounded border-gray-300 focus:ring-da-green"
                   />
                   <span className="text-sm text-gray-700">{prompt.label}</span>
                 </label>
@@ -442,7 +442,7 @@ export default function ScanDocument() {
                     key={cp.id}
                     className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 mb-2"
                   >
-                    <Check size={16} className="text-toyota-green" />
+                    <Check size={16} className="text-da-green" />
                     <span className="text-sm text-gray-700 flex-1">{cp.label}</span>
                     <button
                       onClick={() =>
@@ -480,7 +480,7 @@ export default function ScanDocument() {
 
         {currentStep === 3 && (
           <div>
-            <h3 className="text-xl font-semibold text-toyota-black mb-1">
+            <h3 className="text-xl font-semibold text-da-black mb-1">
               Additional Instructions
             </h3>
             <p className="text-gray-500 text-sm mb-6">
@@ -502,7 +502,7 @@ export default function ScanDocument() {
 
         {currentStep === 4 && (
           <div>
-            <h3 className="text-xl font-semibold text-toyota-black mb-1">Extraction Fields</h3>
+            <h3 className="text-xl font-semibold text-da-black mb-1">Extraction Fields</h3>
             <p className="text-gray-500 text-sm mb-6">
               Select the fields you want to extract from the document
             </p>
@@ -533,11 +533,11 @@ export default function ScanDocument() {
                         [field.id]: !prev[field.id],
                       }))
                     }
-                    className="w-4 h-4 text-toyota-green rounded border-gray-300 focus:ring-toyota-green"
+                    className="w-4 h-4 text-da-green rounded border-gray-300 focus:ring-da-green"
                   />
                   <span className="text-sm text-gray-700">{field.name}</span>
                   {field.suggested && (
-                    <span className="ml-auto text-xs text-toyota-green bg-toyota-green-light px-2 py-0.5 rounded-full">
+                    <span className="ml-auto text-xs text-da-green bg-da-green-light px-2 py-0.5 rounded-full">
                       Suggested
                     </span>
                   )}
@@ -553,7 +553,7 @@ export default function ScanDocument() {
                     key={cf.id}
                     className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 mb-2"
                   >
-                    <Check size={16} className="text-toyota-green" />
+                    <Check size={16} className="text-da-green" />
                     <span className="text-sm text-gray-700 flex-1">
                       {cf.name}{' '}
                       <span className="text-xs text-gray-400">({cf.type})</span>
@@ -575,7 +575,7 @@ export default function ScanDocument() {
 
         {currentStep === 5 && (
           <div>
-            <h3 className="text-xl font-semibold text-toyota-black mb-1">Custom Fields</h3>
+            <h3 className="text-xl font-semibold text-da-black mb-1">Custom Fields</h3>
             <p className="text-gray-500 text-sm mb-6">
               Add any additional fields you want to extract
             </p>
@@ -650,7 +650,7 @@ export default function ScanDocument() {
 
         {currentStep === 6 && (
           <div className="text-center py-8">
-            <h3 className="text-xl font-semibold text-toyota-black mb-2">Scan Document</h3>
+            <h3 className="text-xl font-semibold text-da-black mb-2">Scan Document</h3>
             <p className="text-gray-500 text-sm mb-8">
               Processing your document... This may take a few minutes.
             </p>
@@ -678,7 +678,7 @@ export default function ScanDocument() {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-toyota-black">
+                <span className="text-2xl font-bold text-da-black">
                   {processingProgress}%
                 </span>
               </div>
@@ -690,11 +690,11 @@ export default function ScanDocument() {
                 return (
                   <div key={step.key} className="flex items-center gap-3">
                     {status === 'done' ? (
-                      <CheckCircle2 size={20} className="text-toyota-green flex-shrink-0" />
+                      <CheckCircle2 size={20} className="text-da-green flex-shrink-0" />
                     ) : status === 'active' ? (
                       <Loader2
                         size={20}
-                        className="text-toyota-green flex-shrink-0 animate-spin"
+                        className="text-da-green flex-shrink-0 animate-spin"
                       />
                     ) : (
                       <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0" />
@@ -702,7 +702,7 @@ export default function ScanDocument() {
                     <span
                       className={`text-sm ${
                         status === 'active'
-                          ? 'text-toyota-green font-medium'
+                          ? 'text-da-green font-medium'
                           : status === 'done'
                           ? 'text-gray-600'
                           : 'text-gray-400'
@@ -718,7 +718,7 @@ export default function ScanDocument() {
             <div className="mt-8">
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  className="bg-toyota-green h-2 rounded-full transition-all duration-500"
+                  className="bg-da-green h-2 rounded-full transition-all duration-500"
                   style={{ width: `${processingProgress}%` }}
                 />
               </div>
@@ -783,13 +783,13 @@ export default function ScanDocument() {
                   <div className="flex items-center gap-3">
                     <div className="flex-1 bg-gray-200 rounded-full h-3">
                       <div
-                        className="bg-toyota-green h-3 rounded-full transition-all duration-1000"
+                        className="bg-da-green h-3 rounded-full transition-all duration-1000"
                         style={{
                           width: `${sampleExtractionResult.confidenceScore}%`,
                         }}
                       />
                     </div>
-                    <span className="text-lg font-bold text-toyota-green">
+                    <span className="text-lg font-bold text-da-green">
                       {sampleExtractionResult.confidenceScore}%
                     </span>
                   </div>
@@ -841,7 +841,7 @@ export default function ScanDocument() {
         {currentStep === 7 && showJson && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-toyota-black">JSON Output</h3>
+              <h3 className="text-xl font-semibold text-da-black">JSON Output</h3>
               <button
                 onClick={copyJson}
                 className="btn-secondary text-sm py-1.5 px-3"
@@ -860,7 +860,7 @@ export default function ScanDocument() {
               </button>
             </div>
 
-            <pre className="bg-toyota-deep-blue text-gray-100 rounded-xl p-6 overflow-x-auto text-sm font-mono leading-relaxed">
+            <pre className="bg-da-deep-blue text-gray-100 rounded-xl p-6 overflow-x-auto text-sm font-mono leading-relaxed">
               {JSON.stringify(sampleExtractionResult, null, 2)
                 .split('\n')
                 .map((line, i) => (

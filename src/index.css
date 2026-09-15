@@ -12,11 +12,11 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply bg-toyota-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-toyota-green-hover transition-colors duration-200 flex items-center justify-center gap-2;
+    @apply bg-da-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-da-green-hover transition-colors duration-200 flex items-center justify-center gap-2;
   }
 
   .btn-secondary {
-    @apply border border-toyota-green text-toyota-green px-6 py-2.5 rounded-lg font-medium hover:bg-toyota-green-light transition-colors duration-200 flex items-center justify-center gap-2;
+    @apply border border-da-green text-da-green px-6 py-2.5 rounded-lg font-medium hover:bg-da-green-light transition-colors duration-200 flex items-center justify-center gap-2;
   }
 
   .btn-danger {
@@ -28,7 +28,7 @@ body {
   }
 
   .input-field {
-    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-toyota-green focus:border-toyota-green outline-none transition-all duration-200;
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-da-green focus:border-da-green outline-none transition-all duration-200;
   }
 
   .sidebar-link {

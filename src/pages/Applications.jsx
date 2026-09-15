@@ -47,7 +47,7 @@ export default function Applications() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-toyota-black">Loan Applications</h2>
+          <h2 className="text-lg font-semibold text-da-black">Loan Applications</h2>
           <p className="text-sm text-gray-500">{applications.length} total applications</p>
         </div>
       </div>
@@ -191,7 +191,7 @@ export default function Applications() {
           <div className="fixed inset-y-0 right-0 w-full max-w-lg bg-white shadow-xl z-50 overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-toyota-black">
+                <h3 className="text-lg font-semibold text-da-black">
                   Application Details
                 </h3>
                 <button

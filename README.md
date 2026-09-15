@@ -1,6 +1,6 @@
-# Toyota Fleet Solutions - Admin Portal
+# Direct Axis - Admin Portal
 
-A web-based admin portal for Toyota Financial Services Fleet Solutions. Built with React, Vite, and Tailwind CSS.
+A web-based admin portal for Direct Axis (DA) Financial Services. Built with React, Vite, and Tailwind CSS.
 
 ## Features
 

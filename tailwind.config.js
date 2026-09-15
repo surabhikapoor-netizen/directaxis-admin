@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        'toyota': {
+        'da': {
           'green': '#1E5E4B',
           'green-hover': '#174A3B',
           'green-light': '#E8F5F0',

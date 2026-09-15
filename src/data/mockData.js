@@ -308,7 +308,7 @@ export const staffMembers = [
   {
     id: 'STAFF-001',
     name: 'Sarah Kowalski',
-    email: 'sarah.k@toyotafs.co.za',
+    email: 'sarah.k@directaxis.co.za',
     role: 'Senior Sales Consultant',
     department: 'Fleet Sales',
     leadsManaged: 15,
@@ -319,7 +319,7 @@ export const staffMembers = [
   {
     id: 'STAFF-002',
     name: 'Mike Thompson',
-    email: 'mike.t@toyotafs.co.za',
+    email: 'mike.t@directaxis.co.za',
     role: 'Sales Consultant',
     department: 'Fleet Sales',
     leadsManaged: 12,
@@ -330,7 +330,7 @@ export const staffMembers = [
   {
     id: 'STAFF-003',
     name: 'Lisa Mokoena',
-    email: 'lisa.m@toyotafs.co.za',
+    email: 'lisa.m@directaxis.co.za',
     role: 'Document Analyst',
     department: 'Document Processing',
     leadsManaged: 0,
@@ -341,7 +341,7 @@ export const staffMembers = [
   {
     id: 'STAFF-004',
     name: 'David Chen',
-    email: 'david.c@toyotafs.co.za',
+    email: 'david.c@directaxis.co.za',
     role: 'Credit Analyst',
     department: 'Credit Assessment',
     leadsManaged: 0,
@@ -352,7 +352,7 @@ export const staffMembers = [
   {
     id: 'STAFF-005',
     name: 'Priya Naidoo',
-    email: 'priya.n@toyotafs.co.za',
+    email: 'priya.n@directaxis.co.za',
     role: 'Sales Manager',
     department: 'Fleet Sales',
     leadsManaged: 30,

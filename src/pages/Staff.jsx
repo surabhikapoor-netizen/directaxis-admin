@@ -68,7 +68,7 @@ export default function Staff() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-toyota-black">Staff Members</h2>
+          <h2 className="text-lg font-semibold text-da-black">Staff Members</h2>
           <p className="text-sm text-gray-500">{allStaff.length} team members</p>
         </div>
         <button onClick={() => setShowAddMember(true)} className="btn-primary">
@@ -107,7 +107,7 @@ export default function Staff() {
           <div key={staff.id} className="card hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-toyota-deep-blue rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-da-deep-blue rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-sm">{staff.avatar}</span>
                 </div>
                 <div>
@@ -135,11 +135,11 @@ export default function Staff() {
 
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-xl font-bold text-toyota-black">{staff.leadsManaged}</p>
+                <p className="text-xl font-bold text-da-black">{staff.leadsManaged}</p>
                 <p className="text-xs text-gray-500">Leads</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-xl font-bold text-toyota-black">{staff.activeApplications}</p>
+                <p className="text-xl font-bold text-da-black">{staff.activeApplications}</p>
                 <p className="text-xs text-gray-500">Active Apps</p>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function Staff() {
             <div className="bg-white rounded-2xl shadow-xl max-w-md w-full">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-toyota-black">Add Staff Member</h3>
+                  <h3 className="text-lg font-semibold text-da-black">Add Staff Member</h3>
                   <button
                     onClick={() => setShowAddMember(false)}
                     className="p-2 hover:bg-gray-100 rounded-lg text-gray-400"
@@ -209,7 +209,7 @@ export default function Staff() {
                     <input
                       type="email"
                       className="input-field"
-                      placeholder="name@toyotafs.co.za"
+                      placeholder="name@directaxis.co.za"
                       value={newMember.email}
                       onChange={(e) =>
                         setNewMember({ ...newMember, email: e.target.value })
@@ -273,7 +273,7 @@ export default function Staff() {
           <div className="fixed inset-y-0 right-0 w-full max-w-lg bg-white shadow-xl z-50 overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-toyota-black">Staff Profile</h3>
+                <h3 className="text-lg font-semibold text-da-black">Staff Profile</h3>
                 <button
                   onClick={() => setShowDetail(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg text-gray-400"
@@ -284,7 +284,7 @@ export default function Staff() {
 
               <div className="space-y-6">
                 <div className="text-center">
-                  <div className="w-20 h-20 bg-toyota-deep-blue rounded-full flex items-center justify-center mx-auto mb-3">
+                  <div className="w-20 h-20 bg-da-deep-blue rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-white font-bold text-xl">
                       {selectedStaff.avatar}
                     </span>
@@ -331,13 +331,13 @@ export default function Staff() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-50 rounded-xl p-4 text-center">
-                    <p className="text-3xl font-bold text-toyota-black">
+                    <p className="text-3xl font-bold text-da-black">
                       {selectedStaff.leadsManaged}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">Leads Managed</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4 text-center">
-                    <p className="text-3xl font-bold text-toyota-black">
+                    <p className="text-3xl font-bold text-da-black">
                       {selectedStaff.activeApplications}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">Active Applications</p>

@@ -97,7 +97,7 @@ export default function Leads() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-toyota-black">Lead Management</h2>
+          <h2 className="text-lg font-semibold text-da-black">Lead Management</h2>
           <p className="text-sm text-gray-500">{allLeads.length} total leads</p>
         </div>
         <button onClick={() => setShowRegister(true)} className="btn-primary">
@@ -111,12 +111,12 @@ export default function Leads() {
           <div
             key={key}
             className={`card py-4 cursor-pointer hover:shadow-md transition-shadow ${
-              filterStatus === key ? 'ring-2 ring-toyota-green' : ''
+              filterStatus === key ? 'ring-2 ring-da-green' : ''
             }`}
             onClick={() => setFilterStatus(filterStatus === key ? 'all' : key)}
           >
             <p className="text-xs text-gray-500">{status.label}</p>
-            <p className="text-2xl font-bold text-toyota-black mt-1">
+            <p className="text-2xl font-bold text-da-black mt-1">
               {allLeads.filter((l) => l.status === key).length}
             </p>
           </div>
@@ -207,7 +207,7 @@ export default function Leads() {
                       <div className="flex items-center gap-2">
                         <div className="w-20 bg-gray-200 rounded-full h-1.5">
                           <div
-                            className="bg-toyota-green h-1.5 rounded-full"
+                            className="bg-da-green h-1.5 rounded-full"
                             style={{ width: `${lead.applicationProgress}%` }}
                           />
                         </div>
@@ -258,7 +258,7 @@ export default function Leads() {
             <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-toyota-black">Register New Lead</h3>
+                  <h3 className="text-lg font-semibold text-da-black">Register New Lead</h3>
                   <button onClick={resetForm} className="p-2 hover:bg-gray-100 rounded-lg text-gray-400">
                     <X size={20} />
                   </button>
@@ -267,7 +267,7 @@ export default function Leads() {
                 {registrationSuccess ? (
                   <div className="text-center py-6">
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle2 size={32} className="text-toyota-green" />
+                      <CheckCircle2 size={32} className="text-da-green" />
                     </div>
                     <h4 className="text-lg font-semibold text-gray-800 mb-2">
                       Lead Registered Successfully!
@@ -381,7 +381,7 @@ export default function Leads() {
           <div className="fixed inset-y-0 right-0 w-full max-w-lg bg-white shadow-xl z-50 overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-toyota-black">Lead Progress</h3>
+                <h3 className="text-lg font-semibold text-da-black">Lead Progress</h3>
                 <button
                   onClick={() => setShowDetail(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg text-gray-400"
@@ -411,11 +411,11 @@ export default function Leads() {
                   <div className="flex items-center gap-3">
                     <div className="flex-1 bg-gray-200 rounded-full h-3">
                       <div
-                        className="bg-toyota-green h-3 rounded-full transition-all"
+                        className="bg-da-green h-3 rounded-full transition-all"
                         style={{ width: `${selectedLead.applicationProgress}%` }}
                       />
                     </div>
-                    <span className="text-sm font-bold text-toyota-green">
+                    <span className="text-sm font-bold text-da-green">
                       {selectedLead.applicationProgress}%
                     </span>
                   </div>
@@ -444,7 +444,7 @@ export default function Leads() {
                     </p>
                     <p className="text-sm font-medium">
                       {selectedLead.otpVerified ? (
-                        <span className="text-toyota-green flex items-center gap-1">
+                        <span className="text-da-green flex items-center gap-1">
                           <CheckCircle2 size={14} /> Yes
                         </span>
                       ) : (
@@ -476,7 +476,7 @@ export default function Leads() {
                   <p className="text-sm font-medium text-gray-600 mb-3">Documents</p>
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-toyota-green">
+                      <p className="text-2xl font-bold text-da-green">
                         {selectedLead.documentsUploaded}
                       </p>
                       <p className="text-xs text-gray-500">Uploaded</p>

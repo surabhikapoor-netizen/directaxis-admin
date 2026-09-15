@@ -51,17 +51,17 @@ export default function Layout() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-toyota-deep-blue transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-da-deep-blue transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
             <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-              <span className="text-toyota-deep-blue font-bold text-sm">TFS</span>
+              <span className="text-da-deep-blue font-bold text-sm">DA</span>
             </div>
             <div>
-              <h1 className="text-white font-semibold text-sm">Toyota Financial</h1>
+              <h1 className="text-white font-semibold text-sm">Direct Axis</h1>
               <p className="text-gray-400 text-xs">Fleet Solutions</p>
             </div>
             <button
@@ -116,7 +116,7 @@ export default function Layout() {
               >
                 <Menu size={24} />
               </button>
-              <h2 className="text-xl font-semibold text-toyota-black">{pageTitle}</h2>
+              <h2 className="text-xl font-semibold text-da-black">{pageTitle}</h2>
             </div>
 
             <div className="flex items-center gap-4">
@@ -139,7 +139,7 @@ export default function Layout() {
                   className="flex items-center gap-2 hover:bg-gray-100 rounded-lg px-2 py-1.5"
                   onClick={() => setProfileOpen(!profileOpen)}
                 >
-                  <div className="w-8 h-8 bg-toyota-green rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-da-green rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-semibold">SK</span>
                   </div>
                   <span className="hidden md:block text-sm font-medium text-gray-700">
@@ -179,7 +179,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-toyota-bg">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-da-bg">
           <Outlet />
         </main>
       </div>

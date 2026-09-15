@@ -66,7 +66,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-toyota-black">Good morning, Sarah</h1>
+          <h1 className="text-2xl font-bold text-da-black">Good morning, Sarah</h1>
           <p className="text-gray-500 mt-1">
             Scan and extract information from customer documents quickly and securely.
           </p>
@@ -93,14 +93,14 @@ export default function Dashboard() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-gray-500 font-medium">{stat.title}</p>
-                <p className="text-3xl font-bold text-toyota-black mt-1">{stat.count}</p>
+                <p className="text-3xl font-bold text-da-black mt-1">{stat.count}</p>
                 <p className="text-xs text-gray-400 mt-1">{stat.subtitle}</p>
               </div>
               <div className={`p-3 rounded-xl ${stat.iconBg}`}>
                 <stat.icon size={22} className={stat.color.split(' ')[1]} />
               </div>
             </div>
-            <div className="mt-3 pt-3 border-t border-gray-50 flex items-center text-sm text-toyota-green font-medium">
+            <div className="mt-3 pt-3 border-t border-gray-50 flex items-center text-sm text-da-green font-medium">
               View details
               <ChevronRight size={16} className="ml-1" />
             </div>
@@ -111,10 +111,10 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 card">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-toyota-black">Recent Scans</h3>
+            <h3 className="text-lg font-semibold text-da-black">Recent Scans</h3>
             <button
               onClick={() => navigate('/documents')}
-              className="text-sm text-toyota-green font-medium hover:underline flex items-center gap-1"
+              className="text-sm text-da-green font-medium hover:underline flex items-center gap-1"
             >
               View All <ArrowUpRight size={14} />
             </button>
@@ -176,7 +176,7 @@ export default function Dashboard() {
                       </td>
                       <td className="py-3 px-2 text-sm font-medium hidden md:table-cell">
                         {scan.confidence ? (
-                          <span className="text-toyota-green">{scan.confidence}%</span>
+                          <span className="text-da-green">{scan.confidence}%</span>
                         ) : (
                           <span className="text-gray-300">—</span>
                         )}
@@ -195,14 +195,14 @@ export default function Dashboard() {
         </div>
 
         <div className="card">
-          <h3 className="text-lg font-semibold text-toyota-black mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-semibold text-da-black mb-4">Quick Actions</h3>
           <div className="space-y-3">
             <button
               onClick={() => navigate('/scan')}
-              className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-toyota-green hover:bg-toyota-green-light transition-all text-left"
+              className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-da-green hover:bg-da-green-light transition-all text-left"
             >
-              <div className="p-2 bg-toyota-green-light rounded-lg">
-                <ScanLine size={20} className="text-toyota-green" />
+              <div className="p-2 bg-da-green-light rounded-lg">
+                <ScanLine size={20} className="text-da-green" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-800">Scan New Document</p>
@@ -213,7 +213,7 @@ export default function Dashboard() {
 
             <button
               onClick={() => navigate('/leads')}
-              className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-toyota-green hover:bg-toyota-green-light transition-all text-left"
+              className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-da-green hover:bg-da-green-light transition-all text-left"
             >
               <div className="p-2 bg-blue-50 rounded-lg">
                 <FileText size={20} className="text-blue-600" />
@@ -227,7 +227,7 @@ export default function Dashboard() {
 
             <button
               onClick={() => navigate('/applications')}
-              className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-toyota-green hover:bg-toyota-green-light transition-all text-left"
+              className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-da-green hover:bg-da-green-light transition-all text-left"
             >
               <div className="p-2 bg-purple-50 rounded-lg">
                 <TrendingUp size={20} className="text-purple-600" />
@@ -240,7 +240,7 @@ export default function Dashboard() {
             </button>
           </div>
 
-          <div className="mt-6 p-4 bg-toyota-deep-blue rounded-xl text-white">
+          <div className="mt-6 p-4 bg-da-deep-blue rounded-xl text-white">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp size={18} />
               <h4 className="font-semibold text-sm">Weekly Summary</h4>

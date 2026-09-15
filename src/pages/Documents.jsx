@@ -47,7 +47,7 @@ export default function Documents() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-toyota-black">Document Management</h2>
+          <h2 className="text-lg font-semibold text-da-black">Document Management</h2>
           <p className="text-sm text-gray-500">{documents.length} total documents</p>
         </div>
         <button onClick={() => navigate('/scan')} className="btn-primary">
@@ -194,11 +194,11 @@ export default function Documents() {
                         <div className="flex items-center gap-2">
                           <div className="w-16 bg-gray-200 rounded-full h-1.5">
                             <div
-                              className="bg-toyota-green h-1.5 rounded-full"
+                              className="bg-da-green h-1.5 rounded-full"
                               style={{ width: `${doc.confidenceScore}%` }}
                             />
                           </div>
-                          <span className="text-sm font-medium text-toyota-green">
+                          <span className="text-sm font-medium text-da-green">
                             {doc.confidenceScore}%
                           </span>
                         </div>
@@ -251,7 +251,7 @@ export default function Documents() {
           <div className="fixed inset-y-0 right-0 w-full max-w-lg bg-white shadow-xl z-50 overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-toyota-black">Document Details</h3>
+                <h3 className="text-lg font-semibold text-da-black">Document Details</h3>
                 <button
                   onClick={() => setShowDetail(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg text-gray-400"
@@ -316,11 +316,11 @@ export default function Documents() {
                       <div className="flex items-center gap-2 mt-1">
                         <div className="flex-1 bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-toyota-green h-2 rounded-full"
+                            className="bg-da-green h-2 rounded-full"
                             style={{ width: `${selectedDoc.confidenceScore}%` }}
                           />
                         </div>
-                        <span className="text-sm font-bold text-toyota-green">
+                        <span className="text-sm font-bold text-da-green">
                           {selectedDoc.confidenceScore}%
                         </span>
                       </div>
