@@ -42,18 +42,22 @@ export default function Register() {
   }
 
   return (
-    <AuthLayout>
-      <div className="flex justify-center mb-6">
-        <img src="/Logos/da-logo.svg" alt="Direct Axis" className="h-16 w-auto" />
-      </div>
+    <AuthLayout
+      header={
+        <>
+          <div className="flex justify-center mb-6">
+            <img src="/Logos/da-logo.svg" alt="Direct Axis" className="h-16 w-auto" />
+          </div>
 
-      <h1 className="text-3xl font-semibold text-da-black text-center tracking-tight">
-        Create an account
-      </h1>
-      <p className="text-sm text-gray-500 text-center mt-2 mb-8">
-        Set up your access to the Direct Axis admin portal.
-      </p>
-
+          <h1 className="text-4xl font-semibold text-da-black text-center tracking-tight">
+            Create an account
+          </h1>
+          <p className="text-sm text-gray-500 text-center mt-2">
+            Set up your access to the Direct Axis admin portal.
+          </p>
+        </>
+      }
+    >
       <form onSubmit={handleSubmit} className="space-y-3" noValidate>
         <div>
           <div className="relative">

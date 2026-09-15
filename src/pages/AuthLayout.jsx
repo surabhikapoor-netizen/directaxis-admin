@@ -1,4 +1,5 @@
 // Shared shell for the signed-out screens: artwork panel left, form right.
+import NotchedPanel from '../components/NotchedPanel'
 
 // Slow-drifting aurora over a deep green base, all from the DA green family.
 // Each blob runs its own long, offset loop so the pattern never visibly repeats.
@@ -71,13 +72,13 @@ export function authInput(hasError) {
   }`
 }
 
-export default function AuthLayout({ children }) {
+export default function AuthLayout({ header, children }) {
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-white">
-      {/* Inset so the artwork reads as a rounded panel rather than a hard edge. */}
+      {/* Inset so the artwork reads as a notched card rather than a hard edge. */}
       <div className="hidden lg:block p-6">
-        <div
-          className="relative w-full h-full rounded-[32px] overflow-hidden bg-[#123c31]"
+        <NotchedPanel
+          className="relative w-full h-full overflow-hidden bg-[#123c31]"
           aria-hidden="true"
         >
           <AuroraGreen />
@@ -90,11 +91,19 @@ export default function AuthLayout({ children }) {
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[55%] opacity-[0.08]"
             style={{ filter: 'brightness(0) invert(1)' }}
           />
-        </div>
+        </NotchedPanel>
       </div>
 
       <div className="flex items-center justify-center px-6 py-12 sm:px-12">
-        <div className="w-full max-w-sm">{children}</div>
+        <div className="w-full max-w-md">
+          {/* Lockup and page title stand on the background; only the fields and
+              the actions below them sit on the card. */}
+          {header && <div className="mb-12">{header}</div>}
+
+          <div className="rounded-[28px] border border-gray-200/70 bg-white p-8 shadow-[0_1px_2px_rgba(16,24,40,0.04),0_24px_48px_-28px_rgba(18,60,49,0.35)]">
+            {children}
+          </div>
+        </div>
       </div>
     </div>
   )
