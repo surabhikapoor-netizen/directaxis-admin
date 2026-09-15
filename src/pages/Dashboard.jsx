@@ -11,6 +11,7 @@ import {
   Eye,
 } from 'lucide-react'
 import { dashboardStats, recentScans } from '../data/mockData'
+import { firstName, useAuth } from '../auth/AuthContext'
 
 const statusBadge = {
   completed: 'bg-green-100 text-green-700',
@@ -26,6 +27,7 @@ const statusIcon = {
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const stats = [
     {
@@ -66,13 +68,13 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-da-black">Good morning, Sarah</h1>
+          <h1 className="text-2xl font-bold text-da-black">Good morning, {firstName(user)}</h1>
           <p className="text-gray-500 mt-1">
             Scan and extract information from customer documents quickly and securely.
           </p>
         </div>
         <button
-          onClick={() => navigate('/scan')}
+          onClick={() => navigate('/web/scan')}
           className="btn-primary"
         >
           <ScanLine size={18} />
@@ -86,8 +88,8 @@ export default function Dashboard() {
             key={stat.title}
             className="card hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => {
-              if (stat.title === 'New Scans') navigate('/scan')
-              else navigate('/documents')
+              if (stat.title === 'New Scans') navigate('/web/scan')
+              else navigate('/web/documents')
             }}
           >
             <div className="flex items-start justify-between">
@@ -113,7 +115,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-da-black">Recent Scans</h3>
             <button
-              onClick={() => navigate('/documents')}
+              onClick={() => navigate('/web/documents')}
               className="text-sm text-da-green font-medium hover:underline flex items-center gap-1"
             >
               View All <ArrowUpRight size={14} />
@@ -198,7 +200,7 @@ export default function Dashboard() {
           <h3 className="text-lg font-semibold text-da-black mb-4">Quick Actions</h3>
           <div className="space-y-3">
             <button
-              onClick={() => navigate('/scan')}
+              onClick={() => navigate('/web/scan')}
               className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-da-green hover:bg-da-green-light transition-all text-left"
             >
               <div className="p-2 bg-da-green-light rounded-lg">
@@ -212,7 +214,7 @@ export default function Dashboard() {
             </button>
 
             <button
-              onClick={() => navigate('/leads')}
+              onClick={() => navigate('/web/leads')}
               className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-da-green hover:bg-da-green-light transition-all text-left"
             >
               <div className="p-2 bg-blue-50 rounded-lg">
@@ -226,7 +228,7 @@ export default function Dashboard() {
             </button>
 
             <button
-              onClick={() => navigate('/applications')}
+              onClick={() => navigate('/web/applications')}
               className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-da-green hover:bg-da-green-light transition-all text-left"
             >
               <div className="p-2 bg-purple-50 rounded-lg">

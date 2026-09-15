@@ -50,7 +50,7 @@ export default function Documents() {
           <h2 className="text-lg font-semibold text-da-black">Document Management</h2>
           <p className="text-sm text-gray-500">{documents.length} total documents</p>
         </div>
-        <button onClick={() => navigate('/scan')} className="btn-primary">
+        <button onClick={() => navigate('/web/scan')} className="btn-primary">
           <ScanLine size={18} />
           Scan New Document
         </button>

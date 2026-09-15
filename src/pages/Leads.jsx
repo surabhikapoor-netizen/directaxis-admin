@@ -74,7 +74,7 @@ export default function Leads() {
       email: formData.email,
       phone: formData.phone,
       status: 'link_sent',
-      registeredBy: 'Sarah K.',
+      registeredBy: 'Thandiwe N.',
       registeredDate: '2026-09-15',
       otpVerified: false,
       applicationProgress: 5,

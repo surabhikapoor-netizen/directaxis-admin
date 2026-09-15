@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   ScanLine,
@@ -15,29 +15,37 @@ import {
   LogOut,
   Settings,
 } from 'lucide-react'
+import { shortName, useAuth } from '../auth/AuthContext'
 
 const navItems = [
-  { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/scan', label: 'Scan Document', icon: ScanLine },
-  { path: '/applications', label: 'Applications', icon: FileText },
-  { path: '/documents', label: 'Documents', icon: FolderOpen },
-  { path: '/leads', label: 'Lead Management', icon: Users },
-  { path: '/staff', label: 'Staff Members', icon: UserCircle },
+  { path: '/web', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/web/scan', label: 'Scan Document', icon: ScanLine },
+  { path: '/web/applications', label: 'Applications', icon: FileText },
+  { path: '/web/documents', label: 'Documents', icon: FolderOpen },
+  { path: '/web/leads', label: 'Lead Management', icon: Users },
+  { path: '/web/staff', label: 'Staff Members', icon: UserCircle },
 ]
 
 const pageTitles = {
-  '/': 'Dashboard',
-  '/scan': 'Scan Document',
-  '/applications': 'Loan Applications',
-  '/documents': 'Documents',
-  '/leads': 'Lead Management',
-  '/staff': 'Staff Members',
+  '/web': 'Dashboard',
+  '/web/scan': 'Scan Document',
+  '/web/applications': 'Loan Applications',
+  '/web/documents': 'Documents',
+  '/web/leads': 'Lead Management',
+  '/web/staff': 'Staff Members',
 }
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/web/login', { replace: true })
+  }
 
   const pageTitle = pageTitles[location.pathname] || 'Dashboard'
 
@@ -51,25 +59,27 @@ export default function Layout() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-da-deep-blue transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-da-green transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-              <span className="text-da-deep-blue font-bold text-sm">DA</span>
+          <div className="px-6 pt-6 pb-5 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              {/* The lockup is green and red, so it needs a light plate on the green sidebar. */}
+              <div className="inline-flex flex-shrink-0 bg-white rounded-2xl px-3 py-2.5 shadow-lg shadow-black/20 ring-1 ring-black/5">
+                <img src="/Logos/da-logo.svg" alt="Direct Axis" className="h-8 w-auto" />
+              </div>
+              <p className="max-w-[72px] text-[10px] font-medium uppercase tracking-[0.14em] text-white/55 leading-[1.5]">
+                Fleet Solutions
+              </p>
+              <button
+                className="ml-auto -mr-1 flex-shrink-0 lg:hidden text-gray-300 hover:text-white"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X size={20} />
+              </button>
             </div>
-            <div>
-              <h1 className="text-white font-semibold text-sm">Direct Axis</h1>
-              <p className="text-gray-400 text-xs">Fleet Solutions</p>
-            </div>
-            <button
-              className="ml-auto lg:hidden text-gray-400 hover:text-white"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X size={20} />
-            </button>
           </div>
 
           <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -77,7 +87,7 @@ export default function Layout() {
               <NavLink
                 key={item.path}
                 to={item.path}
-                end={item.path === '/'}
+                end={item.path === '/web'}
                 className={({ isActive }) =>
                   `sidebar-link ${isActive ? 'active' : ''}`
                 }
@@ -91,14 +101,17 @@ export default function Layout() {
 
           <div className="px-3 py-4 border-t border-white/10">
             <NavLink
-              to="/settings"
+              to="/web/settings"
               className="sidebar-link"
               onClick={() => setSidebarOpen(false)}
             >
               <Settings size={20} />
               Settings
             </NavLink>
-            <button className="sidebar-link w-full text-red-300 hover:text-red-200 hover:bg-red-500/10">
+            <button
+              onClick={handleLogout}
+              className="sidebar-link w-full text-red-300 hover:text-red-200 hover:bg-red-500/10"
+            >
               <LogOut size={20} />
               Logout
             </button>
@@ -140,10 +153,10 @@ export default function Layout() {
                   onClick={() => setProfileOpen(!profileOpen)}
                 >
                   <div className="w-8 h-8 bg-da-green rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold">SK</span>
+                    <span className="text-white text-xs font-semibold">{user.avatar}</span>
                   </div>
                   <span className="hidden md:block text-sm font-medium text-gray-700">
-                    Sarah K.
+                    {shortName(user)}
                   </span>
                   <ChevronDown size={16} className="text-gray-400" />
                 </button>
@@ -156,8 +169,8 @@ export default function Layout() {
                     />
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 py-1">
                       <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-800">Sarah Kowalski</p>
-                        <p className="text-xs text-gray-500">Senior Sales Consultant</p>
+                        <p className="text-sm font-medium text-gray-800">{user.name}</p>
+                        <p className="text-xs text-gray-500">{user.role}</p>
                       </div>
                       <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                         <UserCircle size={16} />
@@ -167,7 +180,10 @@ export default function Layout() {
                         <Settings size={16} />
                         Settings
                       </button>
-                      <button className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                      >
                         <LogOut size={16} />
                         Logout
                       </button>
