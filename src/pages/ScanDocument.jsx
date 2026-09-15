@@ -649,14 +649,28 @@ export default function ScanDocument() {
         )}
 
         {currentStep === 6 && (
-          <div className="text-center py-8">
-            <h3 className="text-xl font-semibold text-da-black mb-2">Scan Document</h3>
-            <p className="text-gray-500 text-sm mb-8">
+          /* -m-6 lets the tinted ground fill the card the step sits in. */
+          <div className="relative -m-6 overflow-hidden rounded-xl bg-gradient-to-b from-da-green-light via-white to-da-green-light/60 text-center px-6 py-14">
+            {/* Drifting ambient glows keep the wait from feeling static. */}
+            <span className="absolute -top-24 -left-28 w-80 h-80 rounded-full bg-da-green/25 blur-3xl float-slow" />
+            <span className="absolute -bottom-28 -right-24 w-96 h-96 rounded-full bg-emerald-400/25 blur-3xl float-slower" />
+            <span className="absolute top-1/3 -right-32 w-64 h-64 rounded-full bg-teal-300/20 blur-3xl float-slow" />
+
+            <h3 className="relative text-xl font-semibold text-da-black mb-2">Scan Document</h3>
+            <p className="relative text-gray-600 text-sm mb-8">
               Processing your document... This may take a few minutes.
             </p>
 
             <div className="relative w-32 h-32 mx-auto mb-8">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+              <span
+                className="absolute inset-0 rounded-full border-2 border-da-green/25 animate-ping"
+                style={{ animationDuration: '2.4s' }}
+              />
+              <span
+                className="absolute inset-3 rounded-full border-2 border-da-green/20 animate-ping"
+                style={{ animationDuration: '2.4s', animationDelay: '0.8s' }}
+              />
+              <svg className="relative w-full h-full -rotate-90" viewBox="0 0 100 100">
                 <circle
                   cx="50"
                   cy="50"
@@ -684,7 +698,7 @@ export default function ScanDocument() {
               </div>
             </div>
 
-            <div className="max-w-sm mx-auto space-y-3 text-left">
+            <div className="relative max-w-sm mx-auto space-y-3 text-left rounded-2xl bg-white/70 backdrop-blur-sm border border-white/80 shadow-sm p-5">
               {processingSteps.map((step) => {
                 const status = getStepStatus(step.key)
                 return (
@@ -705,7 +719,7 @@ export default function ScanDocument() {
                           ? 'text-da-green font-medium'
                           : status === 'done'
                           ? 'text-gray-600'
-                          : 'text-gray-400'
+                          : 'text-gray-300'
                       }`}
                     >
                       {step.label}
@@ -715,8 +729,8 @@ export default function ScanDocument() {
               })}
             </div>
 
-            <div className="mt-8">
-              <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="relative max-w-sm mx-auto mt-8">
+              <div className="w-full bg-white/70 rounded-full h-2">
                 <div
                   className="bg-da-green h-2 rounded-full transition-all duration-500"
                   style={{ width: `${processingProgress}%` }}
@@ -743,7 +757,7 @@ export default function ScanDocument() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-gray-800">
-                      {file?.name || 'bank_statement_abc.pdf'}
+                      {file?.name || 'bank_statement_umhlanga.pdf'}
                     </p>
                     <p className="text-sm text-gray-500">
                       PDF &middot; 2.4 MB &middot; 12 Apr 2025
@@ -776,23 +790,6 @@ export default function ScanDocument() {
                       <span className="text-sm font-medium text-gray-800">{value}</span>
                     </div>
                   ))}
-                </div>
-
-                <div className="mt-6">
-                  <p className="text-sm font-medium text-gray-600 mb-2">Confidence Score</p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 bg-gray-200 rounded-full h-3">
-                      <div
-                        className="bg-da-green h-3 rounded-full transition-all duration-1000"
-                        style={{
-                          width: `${sampleExtractionResult.confidenceScore}%`,
-                        }}
-                      />
-                    </div>
-                    <span className="text-lg font-bold text-da-green">
-                      {sampleExtractionResult.confidenceScore}%
-                    </span>
-                  </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 mt-8">

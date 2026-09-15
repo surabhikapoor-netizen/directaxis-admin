@@ -74,3 +74,93 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
+
+/* --- Mobile app (DA Admin Portal - App) --- */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@layer components {
+  .m-card {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-sm;
+  }
+
+  .m-btn {
+    @apply w-full flex items-center justify-center gap-2 bg-da-green text-white rounded-xl py-3.5 text-sm font-semibold active:bg-da-green-hover transition-colors disabled:opacity-40;
+  }
+
+  .m-btn-ghost {
+    @apply w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-700 rounded-xl py-3.5 text-sm font-semibold active:bg-gray-50 transition-colors;
+  }
+
+  .m-input {
+    @apply w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-da-green/30 focus:border-da-green transition-all placeholder:text-gray-400;
+  }
+
+  .m-label {
+    @apply block text-xs font-semibold text-gray-600 mb-1.5;
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(14px, -20px) scale(1.1); }
+}
+
+.float-slow {
+  animation: floatSlow 9s ease-in-out infinite;
+}
+
+.float-slower {
+  animation: floatSlow 13s ease-in-out infinite reverse;
+}
+
+/* --- Aurora for the sign-in artwork panel --- */
+
+/* Blobs: large, quick sweeps so the light visibly moves. */
+@keyframes auroraDriftA {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  25%      { transform: translate3d(32%, -26%, 0) scale(1.45); }
+  50%      { transform: translate3d(-22%, 18%, 0) scale(0.8); }
+  75%      { transform: translate3d(20%, 30%, 0) scale(1.2); }
+}
+
+@keyframes auroraDriftB {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.1); }
+  30%      { transform: translate3d(-30%, 24%, 0) scale(0.75); }
+  60%      { transform: translate3d(26%, -20%, 0) scale(1.5); }
+}
+
+@keyframes auroraDriftC {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.9); }
+  35%      { transform: translate3d(24%, -30%, 0) scale(1.35); }
+  70%      { transform: translate3d(-28%, -12%, 0) scale(1.1); }
+}
+
+.aurora-a { animation: auroraDriftA 9s ease-in-out infinite; will-change: transform; }
+.aurora-b { animation: auroraDriftB 11s ease-in-out infinite; will-change: transform; }
+.aurora-c { animation: auroraDriftC 7s ease-in-out infinite; will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-a,
+  .aurora-b,
+  .aurora-c {
+    animation: none;
+  }
+}
