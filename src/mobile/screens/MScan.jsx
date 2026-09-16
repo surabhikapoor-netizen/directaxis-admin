@@ -4,13 +4,13 @@ import {
   X,
   ChevronLeft,
   Check,
+  ChevronDown,
   Image as ImageIcon,
   Zap,
   ZapOff,
   SwitchCamera,
   FileText,
   Trash2,
-  Plus,
   Loader2,
   CheckCircle2,
   Copy,
@@ -20,19 +20,14 @@ import {
 } from 'lucide-react'
 import {
   documentTypes,
-  extractionPrompts,
-  suggestedFields,
   sampleExtractionResult,
 } from '../../data/mockData'
 import { useStatusBarTheme } from '../MobileShell'
+import DataCalculations from '../../components/DataCalculations'
 
 const STEPS = [
   'Capture',
-  'Document Type',
-  'Extraction Prompts',
-  'Instructions',
-  'Extraction Fields',
-  'Custom Fields',
+  'Upload Documents',
 ]
 
 const processingSteps = [
@@ -59,46 +54,19 @@ export default function MScan() {
   const [file, setFile] = useState(null)
   const [flash, setFlash] = useState(false)
   const [selectedType, setSelectedType] = useState(null)
-  const [typeSearch, setTypeSearch] = useState('')
-  const [selectedPrompts, setSelectedPrompts] = useState({})
-  const [customPrompts, setCustomPrompts] = useState([])
-  const [newPrompt, setNewPrompt] = useState('')
+  const [typesOpen, setTypesOpen] = useState(false)
   const [instructions, setInstructions] = useState('')
-  const [selectedFields, setSelectedFields] = useState({})
-  const [customFields, setCustomFields] = useState([])
-  const [newFieldName, setNewFieldName] = useState('')
-  const [newFieldType, setNewFieldType] = useState('Text')
   const [processingStatus, setProcessingStatus] = useState('uploading')
   const [processingProgress, setProcessingProgress] = useState(0)
   const [showJson, setShowJson] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const onCamera = currentStep === 0
-  const onProcessing = currentStep === 6
+  const onProcessing = currentStep === 2
   useStatusBarTheme(
     onCamera,
     onCamera ? '#1A1A1A' : onProcessing ? '#E8F5F0' : '#FFFFFF'
   )
-
-  const availablePrompts = selectedType
-    ? extractionPrompts[selectedType] || extractionPrompts['other']
-    : []
-
-  const availableFields = selectedType
-    ? suggestedFields[selectedType] || suggestedFields['bank-statement']
-    : []
-
-  useEffect(() => {
-    if (!selectedType) return
-    const prompts = extractionPrompts[selectedType] || extractionPrompts['other']
-    setSelectedPrompts(
-      prompts.reduce((acc, p) => (p.default ? { ...acc, [p.id]: true } : acc), {})
-    )
-    const fields = suggestedFields[selectedType] || suggestedFields['bank-statement']
-    setSelectedFields(
-      fields.reduce((acc, f) => (f.suggested ? { ...acc, [f.id]: true } : acc), {})
-    )
-  }, [selectedType])
 
   const simulateProcessing = useCallback(() => {
     setProcessingStatus('uploading')
@@ -122,12 +90,12 @@ export default function MScan() {
       }, elapsed)
     })
 
-    timers.push(setTimeout(() => setCurrentStep(7), elapsed + 800))
+    timers.push(setTimeout(() => setCurrentStep(3), elapsed + 800))
     return () => timers.forEach(clearTimeout)
   }, [])
 
   useEffect(() => {
-    if (currentStep === 6) return simulateProcessing()
+    if (currentStep === 2) return simulateProcessing()
   }, [currentStep, simulateProcessing])
 
   const canProceed = () => {
@@ -136,10 +104,6 @@ export default function MScan() {
         return !!file
       case 1:
         return !!selectedType
-      case 2:
-        return Object.values(selectedPrompts).some(Boolean)
-      case 4:
-        return Object.values(selectedFields).some(Boolean)
       default:
         return true
     }
@@ -149,15 +113,8 @@ export default function MScan() {
     setCurrentStep(0)
     setFile(null)
     setSelectedType(null)
-    setTypeSearch('')
-    setSelectedPrompts({})
-    setCustomPrompts([])
-    setNewPrompt('')
+    setTypesOpen(false)
     setInstructions('')
-    setSelectedFields({})
-    setCustomFields([])
-    setNewFieldName('')
-    setNewFieldType('Text')
     setProcessingProgress(0)
     setShowJson(false)
   }
@@ -170,9 +127,7 @@ export default function MScan() {
     return 'pending'
   }
 
-  const filteredTypes = documentTypes.filter((t) =>
-    t.name.toLowerCase().includes(typeSearch.toLowerCase())
-  )
+  const selectedTypeMeta = documentTypes.find((t) => t.id === selectedType)
 
   const copyJson = () => {
     navigator.clipboard?.writeText(JSON.stringify(sampleExtractionResult, null, 2))
@@ -287,7 +242,7 @@ export default function MScan() {
 
   /* -------------------------- Step 6: processing -------------------------- */
 
-  if (currentStep === 6) {
+  if (currentStep === 2) {
     return (
       <div className="relative min-h-full overflow-hidden bg-gradient-to-b from-da-green-light via-white to-da-green-light/60 flex flex-col items-center justify-center px-8 py-10">
         {/* Drifting ambient glows keep the wait from feeling static. */}
@@ -361,7 +316,7 @@ export default function MScan() {
 
   /* ---------------------------- Step 7: results --------------------------- */
 
-  if (currentStep === 7) {
+  if (currentStep === 3) {
     if (showJson) {
       return (
         <div className="min-h-full bg-white flex flex-col">
@@ -458,6 +413,8 @@ export default function MScan() {
               ))}
             </div>
           </div>
+
+          <DataCalculations />
         </div>
 
         <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4 pb-5 space-y-2.5">
@@ -517,211 +474,87 @@ export default function MScan() {
       <div className="flex-1 p-4 space-y-3">
         {currentStep === 1 && (
           <>
-            <input
-              type="text"
-              value={typeSearch}
-              onChange={(e) => setTypeSearch(e.target.value)}
-              placeholder="Search document type..."
-              className="m-input"
-            />
-            <div className="space-y-2">
-              {filteredTypes.map((type) => (
+            <div className="m-card p-4">
+              <p className="text-sm font-semibold text-da-black mb-1">Document Type</p>
+              <p className="text-xs text-gray-500 mb-3">
+                Select the type of document you are uploading
+              </p>
+
+              {/* Type picker collapsed to a dropdown so both sections fit one screen. */}
+              <div className="relative">
                 <button
-                  key={type.id}
-                  onClick={() => setSelectedType(type.id)}
-                  className={`w-full flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all ${
-                    selectedType === type.id
-                      ? 'border-da-green bg-da-green-light'
-                      : 'border-gray-100 bg-white active:bg-gray-50'
-                  }`}
+                  type="button"
+                  onClick={() => setTypesOpen(!typesOpen)}
+                  className="m-input flex items-center justify-between text-left"
                 >
-                  <span className="text-2xl">{type.icon}</span>
-                  <span className="text-sm font-medium text-gray-800 flex-1">{type.name}</span>
-                  {selectedType === type.id && (
-                    <span className="w-5 h-5 bg-da-green rounded-full flex items-center justify-center">
-                      <Check size={12} className="text-white" />
+                  {selectedTypeMeta ? (
+                    <span className="flex items-center gap-2.5">
+                      <span className="text-xl">{selectedTypeMeta.icon}</span>
+                      <span className="text-sm font-medium text-gray-800">
+                        {selectedTypeMeta.name}
+                      </span>
                     </span>
+                  ) : (
+                    <span className="text-sm text-gray-400">Select a document type...</span>
                   )}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-
-        {currentStep === 2 && (
-          <>
-            <p className="text-xs text-gray-500 px-1">
-              Choose what to pull from this{' '}
-              {documentTypes.find((t) => t.id === selectedType)?.name.toLowerCase()}.
-            </p>
-            <div className="m-card divide-y divide-gray-50 overflow-hidden">
-              {availablePrompts.map((prompt) => (
-                <label
-                  key={prompt.id}
-                  className="flex items-center gap-3 px-4 py-3.5 active:bg-gray-50"
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!selectedPrompts[prompt.id]}
-                    onChange={() =>
-                      setSelectedPrompts((prev) => ({ ...prev, [prompt.id]: !prev[prompt.id] }))
-                    }
-                    className="w-5 h-5 rounded-md border-gray-300 text-da-green focus:ring-da-green"
+                  <ChevronDown
+                    size={18}
+                    className={`text-gray-400 flex-shrink-0 transition-transform ${
+                      typesOpen ? 'rotate-180' : ''
+                    }`}
                   />
-                  <span className="text-sm text-gray-700">{prompt.label}</span>
-                </label>
-              ))}
-            </div>
+                </button>
 
-            {customPrompts.length > 0 && (
-              <div className="m-card divide-y divide-gray-50 overflow-hidden">
-                {customPrompts.map((cp) => (
-                  <div key={cp.id} className="flex items-center gap-3 px-4 py-3.5">
-                    <Check size={17} className="text-da-green" />
-                    <span className="text-sm text-gray-700 flex-1">{cp.label}</span>
-                    <button
-                      onClick={() => setCustomPrompts(customPrompts.filter((p) => p.id !== cp.id))}
-                      className="text-red-400 active:text-red-600"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newPrompt}
-                onChange={(e) => setNewPrompt(e.target.value)}
-                placeholder="Add custom prompt..."
-                className="m-input flex-1"
-              />
-              <button
-                onClick={() => {
-                  if (!newPrompt.trim()) return
-                  setCustomPrompts([
-                    ...customPrompts,
-                    { id: `custom-${Date.now()}`, label: newPrompt.trim() },
-                  ])
-                  setNewPrompt('')
-                }}
-                disabled={!newPrompt.trim()}
-                className="w-12 rounded-xl bg-da-green text-white flex items-center justify-center disabled:opacity-40"
-              >
-                <Plus size={19} />
-              </button>
-            </div>
-          </>
-        )}
-
-        {currentStep === 3 && (
-          <div className="m-card p-4">
-            <p className="text-xs text-gray-500 mb-3">
-              Anything else the extractor should know? (Optional)
-            </p>
-            <textarea
-              value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
-              maxLength={500}
-              placeholder="Please also extract the branch name and account type if available."
-              className="m-input min-h-[160px] resize-none"
-            />
-            <p className="text-[11px] text-gray-400 text-right mt-1.5">
-              {instructions.length}/500
-            </p>
-          </div>
-        )}
-
-        {currentStep === 4 && (
-          <div className="m-card divide-y divide-gray-50 overflow-hidden">
-            {availableFields.map((field) => (
-              <label key={field.id} className="flex items-center gap-3 px-4 py-3.5 active:bg-gray-50">
-                <input
-                  type="checkbox"
-                  checked={!!selectedFields[field.id]}
-                  onChange={() =>
-                    setSelectedFields((prev) => ({ ...prev, [field.id]: !prev[field.id] }))
-                  }
-                  className="w-5 h-5 rounded-md border-gray-300 text-da-green focus:ring-da-green"
-                />
-                <span className="text-sm text-gray-700 flex-1">{field.name}</span>
-                {field.suggested && (
-                  <span className="text-[10px] text-da-green bg-da-green-light px-2 py-0.5 rounded-full">
-                    Suggested
-                  </span>
-                )}
-              </label>
-            ))}
-          </div>
-        )}
-
-        {currentStep === 5 && (
-          <>
-            {customFields.length > 0 && (
-              <div className="m-card divide-y divide-gray-50 overflow-hidden">
-                {customFields.map((cf) => (
-                  <div key={cf.id} className="flex items-center gap-3 px-4 py-3.5">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-700">{cf.name}</p>
-                      <p className="text-[11px] text-gray-400">Type: {cf.type}</p>
+                {typesOpen && (
+                  <div className="absolute z-20 left-0 right-0 mt-2 rounded-2xl border border-gray-200 bg-white shadow-lg p-2 max-h-72 overflow-y-auto space-y-2">
+                    {documentTypes.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => {
+                          setSelectedType(type.id)
+                          setTypesOpen(false)
+                        }}
+                        className={`w-full flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all ${
+                          selectedType === type.id
+                            ? 'border-da-green bg-da-green-light'
+                            : 'border-gray-100 bg-white active:bg-gray-50'
+                        }`}
+                      >
+                        <span className="text-2xl">{type.icon}</span>
+                        <span className="text-sm font-medium text-gray-800 flex-1">{type.name}</span>
+                        {selectedType === type.id && (
+                          <span className="w-5 h-5 bg-da-green rounded-full flex items-center justify-center">
+                            <Check size={12} className="text-white" />
+                          </span>
+                        )}
+                      </button>
+                    ))}
                     </div>
-                    <button
-                      onClick={() => setCustomFields(customFields.filter((f) => f.id !== cf.id))}
-                      className="text-red-400 active:text-red-600"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
+                  )}
               </div>
-            )}
+            </div>
 
-            <div className="m-card p-4 space-y-3">
-              <div>
-                <label className="m-label">Field Name</label>
-                <input
-                  type="text"
-                  value={newFieldName}
-                  onChange={(e) => setNewFieldName(e.target.value)}
-                  placeholder="Branch Name"
-                  className="m-input"
-                />
-              </div>
-              <div>
-                <label className="m-label">Field Type</label>
-                <select
-                  value={newFieldType}
-                  onChange={(e) => setNewFieldType(e.target.value)}
-                  className="m-input appearance-none"
-                >
-                  <option>Text</option>
-                  <option>Number</option>
-                  <option>Date</option>
-                  <option>Currency</option>
-                  <option>Boolean</option>
-                </select>
-              </div>
-              <button
-                onClick={() => {
-                  if (!newFieldName.trim()) return
-                  setCustomFields([
-                    ...customFields,
-                    { id: `custom-${Date.now()}`, name: newFieldName.trim(), type: newFieldType },
-                  ])
-                  setNewFieldName('')
-                  setNewFieldType('Text')
-                }}
-                disabled={!newFieldName.trim()}
-                className="m-btn-ghost"
-              >
-                <Plus size={17} />
-                Add Field
-              </button>
+            <div className="m-card p-4">
+              <p className="text-sm font-semibold text-da-black mb-1">
+                Additional Instruction
+              </p>
+              <p className="text-xs text-gray-500 mb-3">
+                Anything else the extractor should know? (Optional)
+              </p>
+              <textarea
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                maxLength={500}
+                placeholder="Please also extract the branch name and account type if available."
+                className="m-input min-h-[160px] resize-none"
+              />
+              <p className="text-[11px] text-gray-400 text-right mt-1.5">
+                {instructions.length}/500
+              </p>
             </div>
           </>
         )}
+
       </div>
 
       <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4 pb-5">
@@ -730,7 +563,7 @@ export default function MScan() {
           disabled={!canProceed()}
           className="m-btn"
         >
-          {currentStep === 5 ? 'Start Scan' : 'Continue'}
+          {currentStep === 1 ? 'Start Scan' : 'Continue'}
         </button>
       </div>
     </div>
