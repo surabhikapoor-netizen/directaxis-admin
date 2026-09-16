@@ -27,6 +27,38 @@ const defaultChrome = { light: false, bg: '#FFFFFF' }
 const TITANIUM =
   'sm:bg-[linear-gradient(145deg,#eaeaef_0%,#a3a3ab_22%,#d9d9df_48%,#8d8d96_74%,#e2e2e7_100%)]'
 
+// The mockup is authored at one true device size; anything smaller is a uniform
+// scale of it, so the frame never gets squashed on one axis by a short viewport.
+const FRAME_W = 418
+const FRAME_H = 872
+const GUTTER = 80 // matches the sm:p-10 breathing room around the device
+
+// Below `sm` the shell is the whole screen, so there is no frame to scale.
+function useDeviceFrame() {
+  const [frame, setFrame] = useState({ framed: false, scale: 1 })
+
+  useEffect(() => {
+    const measure = () => {
+      const framed = window.innerWidth >= 640
+      const scale = framed
+        ? Math.min(
+            1,
+            (window.innerHeight - GUTTER) / FRAME_H,
+            (window.innerWidth - GUTTER) / FRAME_W
+          )
+        : 1
+      setFrame((prev) =>
+        prev.framed === framed && prev.scale === scale ? prev : { framed, scale }
+      )
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
+  return frame
+}
+
 const SIDE_BUTTONS = [
   { key: 'silent', position: '-left-[5px] top-[118px] w-[5px] h-[32px] rounded-l' },
   { key: 'volume-up', position: '-left-[5px] top-[178px] w-[5px] h-[58px] rounded-l' },
@@ -126,6 +158,8 @@ export default function MobileShell() {
   const [override, setOverride] = useState(null)
   const setChrome = useCallback((value) => setOverride(value), [])
 
+  const { framed, scale } = useDeviceFrame()
+
   const chrome = override || screenChrome[location.pathname] || defaultChrome
   const hideTabBar = ['/app/scan', '/app/login', '/app/register'].includes(
     location.pathname
@@ -134,35 +168,53 @@ export default function MobileShell() {
   return (
     <ChromeContext.Provider value={setChrome}>
       <div className="min-h-[100dvh] w-full bg-[#0b0b0d] flex items-center justify-center sm:p-10">
-        {/* Titanium outer edge */}
-        <div className={`relative w-full h-[100dvh] sm:w-[418px] sm:h-[872px] sm:max-h-[calc(100dvh-5rem)] sm:rounded-[3.6rem] sm:p-[3px] sm:shadow-[0_50px_100px_-30px_rgba(0,0,0,0.9)] ${TITANIUM}`}>
-          {SIDE_BUTTONS.map((button) => (
-            <span
-              key={button.key}
-              className={`hidden sm:block absolute ${button.position} ${TITANIUM} shadow-sm`}
-            />
-          ))}
+        {/* Reserves the scaled footprint so the device still centres correctly. */}
+        <div
+          className="w-full h-[100dvh] sm:w-auto sm:h-auto"
+          style={framed ? { width: FRAME_W * scale, height: FRAME_H * scale } : undefined}
+        >
+          {/* Titanium outer edge */}
+          <div
+            className={`relative w-full h-[100dvh] sm:rounded-[3.6rem] sm:p-[3px] sm:shadow-[0_50px_100px_-30px_rgba(0,0,0,0.9)] ${TITANIUM}`}
+            style={
+              framed
+                ? {
+                    width: FRAME_W,
+                    height: FRAME_H,
+                    transform: `scale(${scale})`,
+                    transformOrigin: 'top left',
+                  }
+                : undefined
+            }
+          >
+            {SIDE_BUTTONS.map((button) => (
+              <span
+                key={button.key}
+                className={`hidden sm:block absolute ${button.position} ${TITANIUM} shadow-sm`}
+              />
+            ))}
 
-          {/* Black bezel */}
-          <div className="relative w-full h-full sm:rounded-[3.45rem] sm:bg-black sm:p-[11px]">
-            <div
-              className="relative w-full h-full overflow-hidden bg-da-bg flex flex-col sm:rounded-[2.95rem]"
-              style={{ backgroundColor: chrome.bg }}
-            >
-              <div className="hidden sm:flex absolute top-[11px] left-1/2 -translate-x-1/2 w-[126px] h-[35px] bg-black rounded-full z-40 items-center justify-end pr-3.5">
-                <span className="w-[10px] h-[10px] rounded-full bg-[#141c2b] ring-1 ring-[#2b3448]" />
+            {/* Black bezel */}
+            <div className="relative w-full h-full sm:rounded-[3.45rem] sm:bg-black sm:p-[11px]">
+              <div
+                className="relative w-full h-full overflow-hidden bg-da-bg flex flex-col sm:rounded-[2.95rem]"
+                style={{ backgroundColor: chrome.bg }}
+              >
+                <div className="hidden sm:flex absolute top-[11px] left-1/2 -translate-x-1/2 w-[126px] h-[35px] bg-black rounded-full z-40 items-center justify-end pr-3.5">
+                  <span className="w-[10px] h-[10px] rounded-full bg-[#141c2b] ring-1 ring-[#2b3448]" />
+                </div>
+
+                <StatusBar light={chrome.light} bg={chrome.bg} />
+
+                <main className="flex-1 overflow-y-auto overscroll-contain bg-da-bg">
+                  <Outlet />
+                </main>
+
+                {!hideTabBar && <TabBar />}
+
+                {/* Sheets and modals portal here so they stay inside the device frame. */}
+                <div id="mobile-overlay-root" className="absolute inset-0 z-50 pointer-events-none sm:rounded-[2.95rem] overflow-hidden" />
               </div>
-
-              <StatusBar light={chrome.light} bg={chrome.bg} />
-
-              <main className="flex-1 overflow-y-auto overscroll-contain bg-da-bg">
-                <Outlet />
-              </main>
-
-              {!hideTabBar && <TabBar />}
-
-              {/* Sheets and modals portal here so they stay inside the device frame. */}
-              <div id="mobile-overlay-root" className="absolute inset-0 z-50 pointer-events-none sm:rounded-[2.95rem] overflow-hidden" />
             </div>
           </div>
         </div>
