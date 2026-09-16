@@ -6,30 +6,11 @@ import {
   XCircle,
   Bell,
   ChevronRight,
-  FileText,
   UserPlus,
   TrendingUp,
 } from 'lucide-react'
-import { dashboardStats, recentScans } from '../../data/mockData'
+import { dashboardStats } from '../../data/mockData'
 import { firstName, useAuth } from '../../auth/AuthContext'
-
-const statusBadge = {
-  completed: 'bg-green-100 text-green-700',
-  processing: 'bg-yellow-100 text-yellow-700',
-  failed: 'bg-red-100 text-red-700',
-}
-
-const statusIcon = {
-  completed: CheckCircle2,
-  processing: Clock,
-  failed: XCircle,
-}
-
-const statusLabel = {
-  completed: 'Completed',
-  processing: 'Pending',
-  failed: 'Failed',
-}
 
 export default function MHome() {
   const navigate = useNavigate()
@@ -170,52 +151,6 @@ export default function MHome() {
               <ChevronRight size={17} className="text-gray-300" />
             </button>
           ))}
-        </div>
-      </div>
-
-      <div className="px-5 mt-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-da-black">Recent Scans</h2>
-          <button
-            onClick={() => navigate('/app/documents')}
-            className="text-xs font-medium text-da-green"
-          >
-            View all
-          </button>
-        </div>
-
-        <div className="space-y-2.5">
-          {recentScans.slice(0, 4).map((scan) => {
-            const StatusIcon = statusIcon[scan.status]
-            return (
-              <button
-                key={scan.id}
-                onClick={() => navigate('/app/documents')}
-                className="m-card w-full p-3.5 flex items-center gap-3 text-left active:bg-gray-50"
-              >
-                <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <FileText size={18} className="text-gray-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">{scan.fileName}</p>
-                  <p className="text-[11px] text-gray-400 truncate">
-                    {scan.company} &middot; {scan.date}
-                  </p>
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium mt-1.5 ${statusBadge[scan.status]}`}
-                  >
-                    <StatusIcon size={10} />
-                    {statusLabel[scan.status]}
-                  </span>
-                </div>
-                {scan.confidence && (
-                  <span className="text-sm font-semibold text-da-green flex-shrink-0">
-                    {scan.confidence}%
-                  </span>
-                )}
-              </button>
-            )
-          })}
         </div>
       </div>
 
