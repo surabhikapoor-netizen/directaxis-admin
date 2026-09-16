@@ -4,9 +4,8 @@ import {
   Camera,
   FileText,
   ChevronRight,
-  ChevronLeft,
+  ChevronDown,
   Check,
-  Plus,
   X,
   Trash2,
   Loader2,
@@ -20,71 +19,189 @@ import {
 } from 'lucide-react'
 import {
   documentTypes,
-  extractionPrompts,
-  suggestedFields,
   sampleExtractionResult,
+  dataCalculations,
 } from '../data/mockData'
 
 const STEPS = [
   'Upload Document',
-  'Document Type',
-  'Extraction Prompts',
-  'Additional Instructions',
-  'Extraction Fields',
-  'Custom Fields',
   'Processing',
   'Results',
 ]
+
+// "VerifyAccountIdentityRule" -> "Verify Account Identity"
+function ruleTitle(name) {
+  return name.replace(/Rule$/, '').replace(/([a-z])([A-Z])/g, '$1 $2')
+}
+
+// "average_monthly_balance" -> "Average Monthly Balance"
+function fieldLabel(key) {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+const SEVERITY_STYLES = {
+  Error: 'bg-red-50 text-red-700',
+  Warning: 'bg-amber-50 text-amber-700',
+  Info: 'bg-blue-50 text-blue-700',
+}
+
+function formatValue(value) {
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
+  if (typeof value === 'number') {
+    return Number.isInteger(value) ? value.toLocaleString() : value.toFixed(2)
+  }
+  return String(value)
+}
+
+// Details vary in shape per rule, so this walks whatever it is given: scalars
+// become label/value rows, nested objects become titled groups, and lists of
+// objects become small stacked records.
+function DetailTree({ data }) {
+  return (
+    <div className="space-y-2">
+      {Object.entries(data).map(([key, value]) => {
+        const label = fieldLabel(key)
+
+        if (Array.isArray(value)) {
+          if (value.length === 0) {
+            return (
+              <div key={key} className="flex items-baseline justify-between gap-4 py-1.5">
+                <span className="text-sm text-gray-500">{label}</span>
+                <span className="text-sm text-gray-400">None</span>
+              </div>
+            )
+          }
+          if (typeof value[0] !== 'object') {
+            return (
+              <div key={key} className="flex items-baseline justify-between gap-4 py-1.5">
+                <span className="text-sm text-gray-500">{label}</span>
+                <span className="text-sm font-medium text-gray-800 text-right">
+                  {value.join(', ')}
+                </span>
+              </div>
+            )
+          }
+          return (
+            <div key={key} className="pt-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {label}
+              </p>
+              <div className="space-y-2">
+                {value.map((entry, i) => (
+                  <div key={i} className="rounded-lg border border-gray-200 bg-white p-3">
+                    <DetailTree data={entry} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
+        if (value && typeof value === 'object') {
+          return (
+            <div key={key} className="pt-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">
+                {label}
+              </p>
+              <div className="pl-3 border-l-2 border-gray-100">
+                <DetailTree data={value} />
+              </div>
+            </div>
+          )
+        }
+
+        return (
+          <div key={key} className="flex items-baseline justify-between gap-4 py-1.5">
+            <span className="text-sm text-gray-500">{label}</span>
+            <span className="text-sm font-medium text-gray-800 text-right break-words">
+              {formatValue(value)}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function RuleCard({ rule }) {
+  const [open, setOpen] = useState(false)
+  const StatusIcon = rule.Passed
+    ? CheckCircle2
+    : rule.Severity === 'Error'
+    ? XCircle
+    : AlertCircle
+  const statusColor = rule.Passed
+    ? 'text-green-600'
+    : rule.Severity === 'Error'
+    ? 'text-red-500'
+    : 'text-amber-500'
+
+  return (
+    <div className="rounded-xl border border-gray-200 overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-start gap-3 p-4 text-left hover:bg-gray-50 transition-colors"
+      >
+        <StatusIcon size={18} className={`${statusColor} flex-shrink-0 mt-0.5`} />
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm font-semibold text-gray-800">
+              {ruleTitle(rule.RuleName)}
+            </span>
+            <span
+              className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                SEVERITY_STYLES[rule.Severity]
+              }`}
+            >
+              {rule.Severity}
+            </span>
+            <span
+              className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                rule.Passed ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              {rule.Passed ? 'Passed' : 'Not passed'}
+            </span>
+          </div>
+          <p className="text-sm text-gray-500 mt-1">{rule.Message}</p>
+        </div>
+
+        <ChevronDown
+          size={18}
+          className={`text-gray-400 flex-shrink-0 mt-0.5 transition-transform ${
+            open ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="px-4 pb-4 pt-1 bg-gray-50 border-t border-gray-100">
+          <DetailTree data={rule.Details} />
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function ScanDocument() {
   const [currentStep, setCurrentStep] = useState(0)
   const [file, setFile] = useState(null)
   const [dragOver, setDragOver] = useState(false)
   const [selectedType, setSelectedType] = useState(null)
-  const [typeSearch, setTypeSearch] = useState('')
-  const [selectedPrompts, setSelectedPrompts] = useState({})
-  const [customPrompts, setCustomPrompts] = useState([])
-  const [newPrompt, setNewPrompt] = useState('')
+  const [typesOpen, setTypesOpen] = useState(false)
   const [instructions, setInstructions] = useState('')
-  const [selectedFields, setSelectedFields] = useState({})
-  const [customFields, setCustomFields] = useState([])
-  const [newFieldName, setNewFieldName] = useState('')
-  const [newFieldType, setNewFieldType] = useState('Text')
   const [processingStatus, setProcessingStatus] = useState('uploading')
   const [processingProgress, setProcessingProgress] = useState(0)
   const [resultStatus, setResultStatus] = useState('success')
   const [showJson, setShowJson] = useState(false)
   const [copied, setCopied] = useState(false)
-
-  const availablePrompts = selectedType
-    ? extractionPrompts[selectedType] || extractionPrompts['other']
-    : []
-
-  const availableFields = selectedType
-    ? suggestedFields[selectedType] || suggestedFields['bank-statement']
-    : []
-
-  useEffect(() => {
-    if (selectedType && Object.keys(selectedPrompts).length === 0) {
-      const defaults = {}
-      const prompts = extractionPrompts[selectedType] || extractionPrompts['other']
-      prompts.forEach((p) => {
-        if (p.default) defaults[p.id] = true
-      })
-      setSelectedPrompts(defaults)
-    }
-  }, [selectedType])
-
-  useEffect(() => {
-    if (selectedType && Object.keys(selectedFields).length === 0) {
-      const defaults = {}
-      const fields = suggestedFields[selectedType] || suggestedFields['bank-statement']
-      fields.forEach((f) => {
-        if (f.suggested) defaults[f.id] = true
-      })
-      setSelectedFields(defaults)
-    }
-  }, [selectedType])
+  const [calcsOpen, setCalcsOpen] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState(null)
 
   const simulateProcessing = useCallback(() => {
     setProcessingStatus('uploading')
@@ -110,12 +227,12 @@ export default function ScanDocument() {
 
     setTimeout(() => {
       setResultStatus('success')
-      setCurrentStep(7)
+      setCurrentStep(2)
     }, timeout + 800)
   }, [])
 
   useEffect(() => {
-    if (currentStep === 6) {
+    if (currentStep === 1) {
       simulateProcessing()
     }
   }, [currentStep, simulateProcessing])
@@ -136,58 +253,42 @@ export default function ScanDocument() {
     if (currentStep < STEPS.length - 1) setCurrentStep(currentStep + 1)
   }
 
-  const prevStep = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1)
-  }
+  // The uploaded File only exists in memory, so it is previewed through a blob
+  // URL. Creating and revoking it in one effect means the URL is released when
+  // the preview closes, the file changes, or the page unmounts.
+  useEffect(() => {
+    if (!previewOpen || !file) return
+    const url = URL.createObjectURL(file)
+    setPreviewUrl(url)
+    return () => {
+      URL.revokeObjectURL(url)
+      setPreviewUrl(null)
+    }
+  }, [previewOpen, file])
+
+  const passedCount = dataCalculations.filter((r) => r.Passed).length
+
+  const openPreview = () => setPreviewOpen(true)
+  const closePreview = () => setPreviewOpen(false)
 
   const canProceed = () => {
     switch (currentStep) {
-      case 0: return !!file
-      case 1: return !!selectedType
-      case 2: return Object.values(selectedPrompts).some(Boolean)
-      case 3: return true
-      case 4: return Object.values(selectedFields).some(Boolean)
-      case 5: return true
+      case 0: return !!file && !!selectedType
       default: return true
     }
   }
 
   const resetScan = () => {
     setCurrentStep(0)
+    setPreviewOpen(false)
     setFile(null)
     setSelectedType(null)
-    setTypeSearch('')
-    setSelectedPrompts({})
-    setCustomPrompts([])
-    setNewPrompt('')
     setInstructions('')
-    setSelectedFields({})
-    setCustomFields([])
-    setNewFieldName('')
-    setNewFieldType('Text')
     setProcessingStatus('uploading')
     setProcessingProgress(0)
     setResultStatus('success')
     setShowJson(false)
     setCopied(false)
-  }
-
-  const addCustomPrompt = () => {
-    if (newPrompt.trim()) {
-      setCustomPrompts([...customPrompts, { id: `custom-${Date.now()}`, label: newPrompt.trim() }])
-      setNewPrompt('')
-    }
-  }
-
-  const addCustomField = () => {
-    if (newFieldName.trim()) {
-      setCustomFields([
-        ...customFields,
-        { id: `custom-${Date.now()}`, name: newFieldName.trim(), type: newFieldType },
-      ])
-      setNewFieldName('')
-      setNewFieldType('Text')
-    }
   }
 
   const copyJson = () => {
@@ -196,9 +297,7 @@ export default function ScanDocument() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const filteredTypes = documentTypes.filter((t) =>
-    t.name.toLowerCase().includes(typeSearch.toLowerCase())
-  )
+  const selectedTypeMeta = documentTypes.find((t) => t.id === selectedType)
 
   const processingSteps = [
     { key: 'uploading', label: 'Document uploaded' },
@@ -220,47 +319,6 @@ export default function ScanDocument() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {currentStep < 6 && (
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            {STEPS.slice(0, 6).map((step, i) => (
-              <div key={step} className="flex items-center">
-                <div
-                  className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                    i < currentStep
-                      ? 'bg-da-green text-white'
-                      : i === currentStep
-                      ? 'bg-da-green text-white'
-                      : 'bg-gray-200 text-gray-500'
-                  }`}
-                >
-                  {i < currentStep ? <Check size={16} /> : i + 1}
-                </div>
-                {i < 5 && (
-                  <div
-                    className={`hidden sm:block w-12 lg:w-20 h-0.5 mx-1 ${
-                      i < currentStep ? 'bg-da-green' : 'bg-gray-200'
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between">
-            {STEPS.slice(0, 6).map((step, i) => (
-              <p
-                key={step}
-                className={`text-xs text-center max-w-[80px] lg:max-w-none ${
-                  i === currentStep ? 'text-da-green font-medium' : 'text-gray-400'
-                }`}
-              >
-                <span className="hidden sm:inline">{step}</span>
-              </p>
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="card">
         {currentStep === 0 && (
           <div>
@@ -339,316 +397,97 @@ export default function ScanDocument() {
             <p className="text-xs text-gray-400 text-center mt-3">
               Supported formats: PDF, JPG, PNG &middot; Max size 10 MB
             </p>
+
+            {/* Document type and optional instructions now sit with the
+                upload, so the whole setup happens on one step. */}
+            <div className="mt-8 pt-8 border-t border-gray-100">
+              <h4 className="text-lg font-semibold text-da-black mb-1">Document Type</h4>
+              <p className="text-gray-500 text-sm mb-4">
+                Select the type of document you are uploading
+              </p>
+
+              {/* Collapsed to a dropdown: the trigger carries the choice and the
+                  options keep their card styling inside the panel. */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setTypesOpen(!typesOpen)}
+                  className="input-field flex items-center justify-between text-left"
+                >
+                  {selectedTypeMeta ? (
+                    <span className="flex items-center gap-2.5">
+                      <span className="text-xl">{selectedTypeMeta.icon}</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {selectedTypeMeta.name}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-400">Select a document type...</span>
+                  )}
+                  <ChevronDown
+                    size={18}
+                    className={`text-gray-400 transition-transform flex-shrink-0 ${
+                      typesOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {typesOpen && (
+                  <div className="absolute z-20 left-0 right-0 mt-2 rounded-xl border border-gray-200 bg-white shadow-lg p-3">
+                    <p className="text-sm font-medium text-gray-500 mb-3">Common Document Types</p>
+
+                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                      {documentTypes.map((type) => (
+                        <button
+                          key={type.id}
+                          className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${
+                            selectedType === type.id
+                              ? 'border-da-green bg-da-green-light ring-1 ring-da-green'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          }`}
+                          onClick={() => {
+                            setSelectedType(type.id)
+                            setTypesOpen(false)
+                          }}
+                        >
+                          <span className="text-2xl">{type.icon}</span>
+                          <span className="text-sm font-medium text-gray-700">{type.name}</span>
+                          {selectedType === type.id && (
+                            <div className="ml-auto w-5 h-5 bg-da-green rounded-full flex items-center justify-center">
+                              <Check size={12} className="text-white" />
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-8 pt-8 border-t border-gray-100">
+              <h4 className="text-lg font-semibold text-da-black mb-1">
+                Additional Instructions
+              </h4>
+              <p className="text-gray-500 text-sm mb-4">
+                Provide any additional instructions for data extraction (Optional)
+              </p>
+
+              <textarea
+                className="input-field min-h-[200px] resize-y"
+                placeholder="Please also extract the branch name and account type if available."
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                maxLength={500}
+              />
+              <p className="text-xs text-gray-400 text-right mt-1">
+                {instructions.length}/500
+              </p>
+            </div>
           </div>
         )}
 
         {currentStep === 1 && (
-          <div>
-            <h3 className="text-xl font-semibold text-da-black mb-1">Document Type</h3>
-            <p className="text-gray-500 text-sm mb-6">
-              Select the type of document you are uploading
-            </p>
-
-            <div className="relative mb-4">
-              <input
-                type="text"
-                placeholder="Search document type..."
-                className="input-field pl-10"
-                value={typeSearch}
-                onChange={(e) => setTypeSearch(e.target.value)}
-              />
-              <FileText size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            </div>
-
-            <p className="text-sm font-medium text-gray-500 mb-3">Common Document Types</p>
-
-            <div className="space-y-2">
-              {filteredTypes.map((type) => (
-                <button
-                  key={type.id}
-                  className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${
-                    selectedType === type.id
-                      ? 'border-da-green bg-da-green-light ring-1 ring-da-green'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
-                  onClick={() => setSelectedType(type.id)}
-                >
-                  <span className="text-2xl">{type.icon}</span>
-                  <span className="text-sm font-medium text-gray-700">{type.name}</span>
-                  {selectedType === type.id && (
-                    <div className="ml-auto w-5 h-5 bg-da-green rounded-full flex items-center justify-center">
-                      <Check size={12} className="text-white" />
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {currentStep === 2 && (
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xl font-semibold text-da-black">Extraction Prompts</h3>
-              {selectedType && (
-                <span className="text-sm text-da-green font-medium flex items-center gap-1">
-                  <Check size={14} />
-                  {documentTypes.find((t) => t.id === selectedType)?.name}
-                  <button
-                    className="text-gray-400 hover:text-gray-600 ml-1"
-                    onClick={() => {
-                      setCurrentStep(1)
-                    }}
-                  >
-                    Change
-                  </button>
-                </span>
-              )}
-            </div>
-            <p className="text-gray-500 text-sm mb-6">
-              Upload and extract key information from your{' '}
-              {documentTypes.find((t) => t.id === selectedType)?.name?.toLowerCase() || 'document'}.
-            </p>
-
-            <p className="text-sm font-medium text-gray-600 mb-3">Basic Prompts</p>
-
-            <div className="space-y-2 mb-6">
-              {availablePrompts.map((prompt) => (
-                <label
-                  key={prompt.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!selectedPrompts[prompt.id]}
-                    onChange={() =>
-                      setSelectedPrompts((prev) => ({
-                        ...prev,
-                        [prompt.id]: !prev[prompt.id],
-                      }))
-                    }
-                    className="w-4 h-4 text-da-green rounded border-gray-300 focus:ring-da-green"
-                  />
-                  <span className="text-sm text-gray-700">{prompt.label}</span>
-                </label>
-              ))}
-            </div>
-
-            {customPrompts.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-600 mb-2">Custom Prompts</p>
-                {customPrompts.map((cp) => (
-                  <div
-                    key={cp.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 mb-2"
-                  >
-                    <Check size={16} className="text-da-green" />
-                    <span className="text-sm text-gray-700 flex-1">{cp.label}</span>
-                    <button
-                      onClick={() =>
-                        setCustomPrompts(customPrompts.filter((p) => p.id !== cp.id))
-                      }
-                      className="text-red-400 hover:text-red-600"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add custom prompt..."
-                className="input-field flex-1"
-                value={newPrompt}
-                onChange={(e) => setNewPrompt(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && addCustomPrompt()}
-              />
-              <button
-                onClick={addCustomPrompt}
-                className="btn-secondary px-4"
-                disabled={!newPrompt.trim()}
-              >
-                <Plus size={18} />
-                Add
-              </button>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 3 && (
-          <div>
-            <h3 className="text-xl font-semibold text-da-black mb-1">
-              Additional Instructions
-            </h3>
-            <p className="text-gray-500 text-sm mb-6">
-              Provide any additional instructions for data extraction (Optional)
-            </p>
-
-            <textarea
-              className="input-field min-h-[200px] resize-y"
-              placeholder="Please also extract the branch name and account type if available."
-              value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
-              maxLength={500}
-            />
-            <p className="text-xs text-gray-400 text-right mt-1">
-              {instructions.length}/500
-            </p>
-          </div>
-        )}
-
-        {currentStep === 4 && (
-          <div>
-            <h3 className="text-xl font-semibold text-da-black mb-1">Extraction Fields</h3>
-            <p className="text-gray-500 text-sm mb-6">
-              Select the fields you want to extract from the document
-            </p>
-
-            <div className="relative mb-4">
-              <input
-                type="text"
-                placeholder="Search field..."
-                className="input-field pl-10"
-              />
-              <FileText size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            </div>
-
-            <p className="text-sm font-medium text-gray-600 mb-3">Suggested Fields</p>
-
-            <div className="space-y-2 mb-6">
-              {availableFields.map((field) => (
-                <label
-                  key={field.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!selectedFields[field.id]}
-                    onChange={() =>
-                      setSelectedFields((prev) => ({
-                        ...prev,
-                        [field.id]: !prev[field.id],
-                      }))
-                    }
-                    className="w-4 h-4 text-da-green rounded border-gray-300 focus:ring-da-green"
-                  />
-                  <span className="text-sm text-gray-700">{field.name}</span>
-                  {field.suggested && (
-                    <span className="ml-auto text-xs text-da-green bg-da-green-light px-2 py-0.5 rounded-full">
-                      Suggested
-                    </span>
-                  )}
-                </label>
-              ))}
-            </div>
-
-            {customFields.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">Custom Fields</p>
-                {customFields.map((cf) => (
-                  <div
-                    key={cf.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 mb-2"
-                  >
-                    <Check size={16} className="text-da-green" />
-                    <span className="text-sm text-gray-700 flex-1">
-                      {cf.name}{' '}
-                      <span className="text-xs text-gray-400">({cf.type})</span>
-                    </span>
-                    <button
-                      onClick={() =>
-                        setCustomFields(customFields.filter((f) => f.id !== cf.id))
-                      }
-                      className="text-red-400 hover:text-red-600"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {currentStep === 5 && (
-          <div>
-            <h3 className="text-xl font-semibold text-da-black mb-1">Custom Fields</h3>
-            <p className="text-gray-500 text-sm mb-6">
-              Add any additional fields you want to extract
-            </p>
-
-            {customFields.length > 0 && (
-              <div className="mb-6 space-y-2">
-                {customFields.map((cf) => (
-                  <div
-                    key={cf.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-gray-50"
-                  >
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-700">{cf.name}</p>
-                      <p className="text-xs text-gray-400">Type: {cf.type}</p>
-                    </div>
-                    <button
-                      onClick={() =>
-                        setCustomFields(customFields.filter((f) => f.id !== cf.id))
-                      }
-                      className="text-red-400 hover:text-red-600 p-1"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="border border-gray-200 rounded-xl p-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Field Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Branch Name"
-                    className="input-field"
-                    value={newFieldName}
-                    onChange={(e) => setNewFieldName(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Field Type <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    className="input-field"
-                    value={newFieldType}
-                    onChange={(e) => setNewFieldType(e.target.value)}
-                  >
-                    <option>Text</option>
-                    <option>Number</option>
-                    <option>Date</option>
-                    <option>Currency</option>
-                    <option>Boolean</option>
-                  </select>
-                </div>
-              </div>
-
-              <button
-                onClick={addCustomField}
-                className="btn-secondary text-sm"
-                disabled={!newFieldName.trim()}
-              >
-                <Plus size={16} />
-                Add Another Field
-              </button>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 6 && (
           /* -m-6 lets the tinted ground fill the card the step sits in. */
           <div className="relative -m-6 overflow-hidden rounded-xl bg-gradient-to-b from-da-green-light via-white to-da-green-light/60 text-center px-6 py-14">
             {/* Drifting ambient glows keep the wait from feeling static. */}
@@ -740,7 +579,7 @@ export default function ScanDocument() {
           </div>
         )}
 
-        {currentStep === 7 && !showJson && (
+        {currentStep === 2 && !showJson && (
           <div>
             {resultStatus === 'success' ? (
               <div>
@@ -763,7 +602,12 @@ export default function ScanDocument() {
                       PDF &middot; 2.4 MB &middot; 12 Apr 2025
                     </p>
                   </div>
-                  <button className="btn-secondary text-sm py-1.5 px-3">
+                  <button
+                    onClick={openPreview}
+                    disabled={!file}
+                    className="btn-secondary text-sm py-1.5 px-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={file ? 'Preview the uploaded document' : 'No document available'}
+                  >
                     <Eye size={14} />
                     View Document
                   </button>
@@ -790,6 +634,33 @@ export default function ScanDocument() {
                       <span className="text-sm font-medium text-gray-800">{value}</span>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-8 rounded-xl border border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setCalcsOpen(!calcsOpen)}
+                    className="w-full flex items-center gap-3 p-4 text-left"
+                  >
+                    <span className="font-semibold text-gray-800">View Data Calculations</span>
+                    <span className="text-xs text-gray-500">
+                      {passedCount} of {dataCalculations.length} checks passed
+                    </span>
+                    <ChevronDown
+                      size={18}
+                      className={`text-gray-400 ml-auto transition-transform ${
+                        calcsOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {calcsOpen && (
+                    <div className="p-4 pt-0 space-y-3">
+                      {dataCalculations.map((rule) => (
+                        <RuleCard key={rule.RuleName} rule={rule} />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 mt-8">
@@ -835,7 +706,7 @@ export default function ScanDocument() {
           </div>
         )}
 
-        {currentStep === 7 && showJson && (
+        {currentStep === 2 && showJson && (
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-da-black">JSON Output</h3>
@@ -901,26 +772,59 @@ export default function ScanDocument() {
           </div>
         )}
 
-        {currentStep < 6 && (
-          <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
-            <button
-              onClick={prevStep}
-              className={`btn-secondary ${currentStep === 0 ? 'invisible' : ''}`}
-            >
-              <ChevronLeft size={18} />
-              Back
-            </button>
+        {currentStep === 0 && (
+          <div className="flex justify-end mt-8 pt-6 border-t border-gray-100">
             <button
               onClick={nextStep}
               className="btn-primary"
               disabled={!canProceed()}
             >
-              {currentStep === 5 ? 'Start Scan' : 'Next'}
+              Start Scan
               <ChevronRight size={18} />
             </button>
           </div>
         )}
       </div>
+
+      {previewOpen && previewUrl && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 sm:p-8"
+          onClick={closePreview}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-3xl max-h-full flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100">
+              <FileText size={18} className="text-gray-400 flex-shrink-0" />
+              <p className="font-medium text-gray-800 text-sm truncate">{file?.name}</p>
+              <button
+                onClick={closePreview}
+                className="ml-auto text-gray-400 hover:text-gray-600"
+                aria-label="Close preview"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex-1 min-h-0 bg-gray-50">
+              {file?.type?.startsWith('image/') ? (
+                <img
+                  src={previewUrl}
+                  alt={file?.name}
+                  className="w-full h-full max-h-[70vh] object-contain"
+                />
+              ) : (
+                <iframe
+                  src={previewUrl}
+                  title={file?.name}
+                  className="w-full h-[70vh]"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

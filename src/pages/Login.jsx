@@ -33,13 +33,13 @@ export default function Login() {
       header={
         <>
           <div className="flex justify-center mb-6">
-            <img src="/Logos/da-logo.svg" alt="Direct Axis" className="h-16 w-auto" />
+            <img src="/Logos/da-logo.svg" alt="Direct Axis" className="h-14 w-auto" />
           </div>
 
-          <h1 className="text-4xl font-semibold text-da-black text-center tracking-tight">
+          <h1 className="text-[32px] leading-tight font-semibold text-da-black text-center tracking-tight">
             Sign in to your account
           </h1>
-          <p className="text-sm text-gray-500 text-center mt-2">
+          <p className="text-[15px] text-gray-500 text-center text-balance mt-3">
             Use your Direct Axis credentials to access the admin portal.
           </p>
         </>
@@ -87,7 +87,7 @@ export default function Login() {
 
         <button
           type="submit"
-          className="w-full rounded-full bg-da-green text-white py-3.5 text-sm font-semibold hover:bg-da-green-hover transition-colors mt-5"
+          className="w-full rounded-full bg-da-green text-white py-4 text-[15px] font-semibold hover:bg-da-green-hover transition-colors mt-6"
         >
           Sign in
         </button>
@@ -101,7 +101,7 @@ export default function Login() {
       </p>
 
       <p className="text-center text-xs text-gray-400 mt-8">
-        Direct Axis Fleet Solutions &middot; Admin Portal
+        Admin Portal
       </p>
     </AuthLayout>
   )

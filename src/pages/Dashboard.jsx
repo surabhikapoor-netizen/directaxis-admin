@@ -1,29 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import {
   ScanLine,
-  FileText,
   Clock,
   CheckCircle2,
   XCircle,
-  ArrowUpRight,
   TrendingUp,
   ChevronRight,
-  Eye,
 } from 'lucide-react'
-import { dashboardStats, recentScans } from '../data/mockData'
+import { dashboardStats } from '../data/mockData'
 import { firstName, useAuth } from '../auth/AuthContext'
-
-const statusBadge = {
-  completed: 'bg-green-100 text-green-700',
-  processing: 'bg-yellow-100 text-yellow-700',
-  failed: 'bg-red-100 text-red-700',
-}
-
-const statusIcon = {
-  completed: CheckCircle2,
-  processing: Clock,
-  failed: XCircle,
-}
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -39,7 +24,7 @@ export default function Dashboard() {
       iconBg: 'bg-blue-100',
     },
     {
-      title: 'In Progress',
+      title: 'Pending',
       count: dashboardStats.inProgress.count,
       subtitle: dashboardStats.inProgress.label,
       icon: Clock,
@@ -111,90 +96,6 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-da-black">Recent Scans</h3>
-            <button
-              onClick={() => navigate('/web/documents')}
-              className="text-sm text-da-green font-medium hover:underline flex items-center gap-1"
-            >
-              View All <ArrowUpRight size={14} />
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Document
-                  </th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-                    Company
-                  </th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
-                    Date
-                  </th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-                    Score
-                  </th>
-                  <th className="py-3 px-2"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {recentScans.slice(0, 5).map((scan) => {
-                  const StatusIcon = statusIcon[scan.status]
-                  return (
-                    <tr key={scan.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="py-3 px-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <FileText size={16} className="text-gray-400" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-800 truncate max-w-[180px]">
-                              {scan.fileName}
-                            </p>
-                            <p className="text-xs text-gray-400">{scan.documentType}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-3 px-2 text-sm text-gray-600 hidden md:table-cell">
-                        {scan.company}
-                      </td>
-                      <td className="py-3 px-2 text-sm text-gray-500 hidden lg:table-cell">
-                        {scan.date}
-                      </td>
-                      <td className="py-3 px-2">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusBadge[scan.status]}`}
-                        >
-                          <StatusIcon size={12} />
-                          {scan.status.charAt(0).toUpperCase() + scan.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="py-3 px-2 text-sm font-medium hidden md:table-cell">
-                        {scan.confidence ? (
-                          <span className="text-da-green">{scan.confidence}%</span>
-                        ) : (
-                          <span className="text-gray-300">—</span>
-                        )}
-                      </td>
-                      <td className="py-3 px-2">
-                        <button className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600">
-                          <Eye size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
 
         <div className="card">
           <h3 className="text-lg font-semibold text-da-black mb-4">Quick Actions</h3>
@@ -213,57 +114,32 @@ export default function Dashboard() {
               <ChevronRight size={16} className="text-gray-400 ml-auto" />
             </button>
 
-            <button
-              onClick={() => navigate('/web/leads')}
-              className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-da-green hover:bg-da-green-light transition-all text-left"
-            >
-              <div className="p-2 bg-blue-50 rounded-lg">
-                <FileText size={20} className="text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-800">Register New Lead</p>
-                <p className="text-xs text-gray-500">Add a new company lead</p>
-              </div>
-              <ChevronRight size={16} className="text-gray-400 ml-auto" />
-            </button>
-
-            <button
-              onClick={() => navigate('/web/applications')}
-              className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-da-green hover:bg-da-green-light transition-all text-left"
-            >
-              <div className="p-2 bg-purple-50 rounded-lg">
-                <TrendingUp size={20} className="text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-800">View Applications</p>
-                <p className="text-xs text-gray-500">Track loan applications</p>
-              </div>
-              <ChevronRight size={16} className="text-gray-400 ml-auto" />
-            </button>
           </div>
+        </div>
 
-          <div className="mt-6 p-4 bg-da-deep-blue rounded-xl text-white">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp size={18} />
-              <h4 className="font-semibold text-sm">Weekly Summary</h4>
+        {/* Weekly Summary takes the rest of the row, its figures spread across
+            the width rather than stacked in a narrow column. */}
+        <div className="lg:col-span-2 p-6 bg-da-deep-blue rounded-xl shadow-sm text-white flex flex-col">
+          <div className="flex items-center gap-2">
+            <TrendingUp size={18} />
+            <h3 className="font-semibold">Weekly Summary</h3>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-5 flex-1 content-center">
+            <div>
+              <p className="text-3xl font-bold">48</p>
+              <p className="text-xs text-gray-300 mt-1">Docs Processed</p>
             </div>
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              <div>
-                <p className="text-2xl font-bold">48</p>
-                <p className="text-xs text-gray-300">Docs Processed</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold">95%</p>
-                <p className="text-xs text-gray-300">Avg. Confidence</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold">12</p>
-                <p className="text-xs text-gray-300">New Leads</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold">3</p>
-                <p className="text-xs text-gray-300">Approved Apps</p>
-              </div>
+            <div>
+              <p className="text-3xl font-bold">95%</p>
+              <p className="text-xs text-gray-300 mt-1">Avg. Confidence</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold">12</p>
+              <p className="text-xs text-gray-300 mt-1">New Leads</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold">3</p>
+              <p className="text-xs text-gray-300 mt-1">Approved Apps</p>
             </div>
           </div>
         </div>
