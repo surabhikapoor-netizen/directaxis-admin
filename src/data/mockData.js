@@ -453,3 +453,103 @@ export const docStatusMap = {
   failed: { label: 'Failed', color: 'bg-red-100 text-red-700' },
   pending: { label: 'Pending', color: 'bg-gray-100 text-gray-700' },
 }
+
+// Validation rules run against an extracted statement. Shown on the results
+// screen under "View Data Calculations".
+export const dataCalculations = [
+  {
+    RuleName: 'VerifyAccountIdentityRule',
+    Passed: true,
+    Severity: 'Error',
+    Message: 'Account holder and account number are both present.',
+    Details: {
+      account_holder: 'MISS SINEGUGU NONHLANHLA MNCWABE',
+      account_number: '1418974674',
+    },
+  },
+  {
+    RuleName: 'ValidateBalancesRule',
+    Passed: true,
+    Severity: 'Error',
+    Message: 'Opening balance + credits - debits matches closing balance.',
+    Details: {
+      opening_balance: 36.07,
+      closing_balance: 104.73,
+      total_credits: 711.27,
+      total_debits: 642.61,
+      expected_closing_balance: 104.73,
+      difference: 0.0,
+      tolerance: 0.01,
+    },
+  },
+  {
+    RuleName: 'AnalyzeTransactionHistoryRule',
+    Passed: false,
+    Severity: 'Warning',
+    Message:
+      'Transaction history analysis: 0 salary credit(s), 0 unusually large transaction(s), 1 recurring payment pattern(s), 1 returned/bounced transaction(s).',
+    Details: {
+      transaction_count: 33,
+      salary_credits: { count: 0, total: 0 },
+      large_transactions: { count: 0, transactions: [] },
+      recurring_transactions: [
+        {
+          description: 'sms notification fee: 1 notification(s)',
+          amount: 0.35,
+          occurrences: 3,
+          dates: ['2026-08-14', '2026-08-15', '2026-08-22'],
+        },
+      ],
+      returned_transactions: {
+        count: 1,
+        transactions: [
+          {
+            date: '2026-08-11',
+            description:
+              'Card Purchase Insufficient Funds Fee: Groenkloof Hub Pretoria Za',
+            type: 'debit',
+            amount: 1.0,
+            balance: 87.57,
+          },
+        ],
+      },
+    },
+  },
+  {
+    RuleName: 'CalculateFinancialBehaviourRule',
+    Passed: true,
+    Severity: 'Info',
+    Message: 'Calculated 5 financial behaviour metric(s) over ~1.0 month(s).',
+    Details: {
+      average_monthly_balance: 179.79,
+      average_monthly_income: 698.36,
+      total_credits: 711.27,
+      total_debits: 642.61,
+      cash_deposit_frequency: { count: 2, per_month: 1.96 },
+    },
+  },
+  {
+    RuleName: 'DetectRiskIndicatorsRule',
+    Passed: false,
+    Severity: 'Warning',
+    Message: 'Risk indicator(s) detected: bounced_transactions.',
+    Details: {
+      overdraft_detected: false,
+      bounced_transactions: {
+        count: 1,
+        transactions: [
+          {
+            date: '2026-08-11',
+            description:
+              'Card Purchase Insufficient Funds Fee: Groenkloof Hub Pretoria Za',
+            type: 'debit',
+            amount: 1.0,
+            balance: 87.57,
+          },
+        ],
+      },
+      unusual_large_transactions: { count: 0, transactions: [] },
+      cash_transactions: { count: 2, per_month: 1.96, frequent: false },
+    },
+  },
+]

@@ -1,5 +1,4 @@
-// Shared shell for the signed-out screens: artwork panel left, form right.
-import NotchedPanel from '../components/NotchedPanel'
+// Shared shell for the signed-out screens: one form card centred on a soft grey ground.
 
 // Slow-drifting aurora over a deep green base, all from the DA green family.
 // Each blob runs its own long, offset loop so the pattern never visibly repeats.
@@ -65,45 +64,88 @@ export function AuroraBackdrop() {
 }
 
 export function authInput(hasError) {
-  return `w-full rounded-full border px-5 py-3 pr-12 text-sm outline-none transition-all placeholder:text-gray-400 focus:ring-2 focus:ring-da-green/20 ${
+  return `w-full rounded-full border px-6 py-4 pr-12 text-[15px] outline-none transition-all placeholder:text-gray-400 focus:ring-2 focus:ring-da-green/20 ${
     hasError
       ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
       : 'border-gray-200 focus:border-da-green'
   }`
 }
 
+// Accent colour for the corner wash. One place to retune the whole backdrop.
+const ACCENT = '30, 94, 75' // da-green #1E5E4B
+
+// Vertical slats, softened into a wash by the mask that fades them out.
+const SLATS =
+  `repeating-linear-gradient(90deg,` +
+  ` rgba(${ACCENT},0.20) 0px, rgba(${ACCENT},0.20) 22px,` +
+  ` rgba(${ACCENT},0.07) 22px, rgba(${ACCENT},0.07) 46px)`
+
+// White ground with the colour burning in from one corner: a smooth wash,
+// then the slats on top, each faded out by its own radial mask.
+function AuthBackdrop() {
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-white" aria-hidden="true">
+      {/* Top-left: the dominant corner. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `radial-gradient(105% 85% at 0% 0%, rgba(${ACCENT},0.62) 0%, rgba(${ACCENT},0.26) 30%, rgba(${ACCENT},0.06) 52%, transparent 70%)`,
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: SLATS,
+          WebkitMaskImage: 'radial-gradient(95% 80% at 0% 0%, #000 0%, rgba(0,0,0,0.75) 28%, transparent 66%)',
+          maskImage: 'radial-gradient(95% 80% at 0% 0%, #000 0%, rgba(0,0,0,0.75) 28%, transparent 66%)',
+        }}
+      />
+
+      {/* Bottom-right: a much fainter echo, so the page is not lopsided. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `radial-gradient(60% 45% at 100% 100%, rgba(${ACCENT},0.20) 0%, rgba(${ACCENT},0.05) 40%, transparent 68%)`,
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: SLATS,
+          opacity: 0.55,
+          WebkitMaskImage: 'radial-gradient(48% 38% at 100% 100%, #000 0%, transparent 72%)',
+          maskImage: 'radial-gradient(48% 38% at 100% 100%, #000 0%, transparent 72%)',
+        }}
+      />
+    </div>
+  )
+}
+
 export default function AuthLayout({ header, children }) {
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-white">
-      {/* Inset so the artwork reads as a notched card rather than a hard edge. */}
-      <div className="hidden lg:block p-6">
-        <NotchedPanel
-          className="relative w-full h-full overflow-hidden bg-[#123c31]"
-          aria-hidden="true"
-        >
-          <AuroraGreen />
+    <div className="relative min-h-screen overflow-hidden">
+      <AuthBackdrop />
 
-          {/* Watermark: flattened to white so the green/red lockup doesn't
-              muddy against the green ground. */}
+      <div className="relative min-h-screen flex items-center px-6 py-12 lg:px-16 xl:px-24">
+        {/* Brand mark, centred in the open space beside the card. Below `lg`
+            there is no such space, so the card carries the lockup instead. */}
+        <div className="hidden lg:flex flex-1 items-center justify-start">
           <img
             src="/Logos/da-logo.svg"
-            alt=""
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[55%] opacity-[0.08]"
-            style={{ filter: 'brightness(0) invert(1)' }}
+            alt="Direct Axis"
+            className="h-44 xl:h-56 w-auto opacity-25"
           />
-        </NotchedPanel>
-      </div>
-
-      <div className="flex items-center justify-center px-6 py-12 sm:px-12">
-        <div className="w-full max-w-md">
-          {/* Lockup and page title stand on the background; only the fields and
-              the actions below them sit on the card. */}
-          {header && <div className="mb-12">{header}</div>}
-
-          <div className="rounded-[28px] border border-gray-200/70 bg-white p-8 shadow-[0_1px_2px_rgba(16,24,40,0.04),0_24px_48px_-28px_rgba(18,60,49,0.35)]">
-            {children}
-          </div>
         </div>
+
+      <div className="relative w-full max-w-xl mx-auto lg:mx-0 lg:flex-none">
+        {/* One card carries the whole screen: lockup, title, fields, actions
+            and the footer line, so the form reads as a single object. */}
+        <div className="rounded-[32px] border border-gray-200/90 bg-white px-8 py-12 sm:px-14 sm:py-14 shadow-[0_1px_2px_rgba(16,24,40,0.05),0_12px_24px_-8px_rgba(15,23,42,0.10),0_40px_72px_-28px_rgba(15,23,42,0.40)]">
+          {header && <div className="mb-10">{header}</div>}
+
+          {children}
+        </div>
+      </div>
       </div>
     </div>
   )

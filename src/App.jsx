@@ -9,9 +9,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ScanDocument from './pages/ScanDocument'
-import Applications from './pages/Applications'
 import Documents from './pages/Documents'
-import Leads from './pages/Leads'
 import Staff from './pages/Staff'
 
 // DA Admin Portal - App
@@ -38,9 +36,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="scan" element={<ScanDocument />} />
-            <Route path="applications" element={<Applications />} />
             <Route path="documents" element={<Documents />} />
-            <Route path="leads" element={<Leads />} />
             <Route path="staff" element={<Staff />} />
           </Route>
         </Route>

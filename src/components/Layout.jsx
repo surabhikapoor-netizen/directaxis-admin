@@ -3,8 +3,6 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   ScanLine,
-  FileText,
-  Users,
   FolderOpen,
   UserCircle,
   Bell,
@@ -20,18 +18,14 @@ import { shortName, useAuth } from '../auth/AuthContext'
 const navItems = [
   { path: '/web', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/web/scan', label: 'Scan Document', icon: ScanLine },
-  { path: '/web/applications', label: 'Applications', icon: FileText },
   { path: '/web/documents', label: 'Documents', icon: FolderOpen },
-  { path: '/web/leads', label: 'Lead Management', icon: Users },
   { path: '/web/staff', label: 'Staff Members', icon: UserCircle },
 ]
 
 const pageTitles = {
   '/web': 'Dashboard',
   '/web/scan': 'Scan Document',
-  '/web/applications': 'Loan Applications',
   '/web/documents': 'Documents',
-  '/web/leads': 'Lead Management',
   '/web/staff': 'Staff Members',
 }
 
@@ -70,9 +64,6 @@ export default function Layout() {
               <div className="inline-flex flex-shrink-0 bg-white rounded-2xl px-3 py-2.5 shadow-lg shadow-black/20 ring-1 ring-black/5">
                 <img src="/Logos/da-logo.svg" alt="Direct Axis" className="h-8 w-auto" />
               </div>
-              <p className="max-w-[72px] text-[10px] font-medium uppercase tracking-[0.14em] text-white/55 leading-[1.5]">
-                Fleet Solutions
-              </p>
               <button
                 className="ml-auto -mr-1 flex-shrink-0 lg:hidden text-gray-300 hover:text-white"
                 onClick={() => setSidebarOpen(false)}

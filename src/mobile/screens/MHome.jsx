@@ -25,6 +25,12 @@ const statusIcon = {
   failed: XCircle,
 }
 
+const statusLabel = {
+  completed: 'Completed',
+  processing: 'Pending',
+  failed: 'Failed',
+}
+
 export default function MHome() {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -39,7 +45,7 @@ export default function MHome() {
       to: '/app/scan',
     },
     {
-      title: 'In Progress',
+      title: 'Pending',
       count: dashboardStats.inProgress.count,
       subtitle: dashboardStats.inProgress.label,
       icon: Clock,
@@ -103,7 +109,6 @@ export default function MHome() {
             <div className="bg-white rounded-xl px-2.5 py-2">
               <img src="/Logos/da-logo.svg" alt="Direct Axis" className="h-7 w-auto" />
             </div>
-            <p className="text-white/60 text-[11px]">Fleet Solutions</p>
           </div>
           <div className="flex items-center gap-2">
             <button className="relative w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white active:bg-white/20">
@@ -200,7 +205,7 @@ export default function MHome() {
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium mt-1.5 ${statusBadge[scan.status]}`}
                   >
                     <StatusIcon size={10} />
-                    {scan.status.charAt(0).toUpperCase() + scan.status.slice(1)}
+                    {statusLabel[scan.status]}
                   </span>
                 </div>
                 {scan.confidence && (
